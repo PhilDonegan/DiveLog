@@ -22,7 +22,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WWW", "WWW", "{BBEEB522-282
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiveLog.Web", "DiveLog.Web\DiveLog.Web.csproj", "{9CD9042D-C5A3-4FE6-89F8-DDBBEBB329DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiveLog.Parser", "DiveLog.Parsers\DiveLog.Parser.csproj", "{20021E7F-3AE3-4047-B119-DE2D9821F93B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiveLog.Parser", "DiveLog.Parser\DiveLog.Parser.csproj", "{20021E7F-3AE3-4047-B119-DE2D9821F93B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiveLog.DTO", "DiveLog.DTO\DiveLog.DTO.csproj", "{D819EEFF-8DE9-4838-A227-1BD129EB08B7}"
 EndProject
