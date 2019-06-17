@@ -19,7 +19,7 @@ namespace DiveLog.Web.Helpers
             {
                 try
                 {
-                    using (var reader = new StreamReader(formFile.OpenReadStream(), new UTF8Encoding(false, true), true))
+                    using (var reader = new StreamReader(formFile.OpenReadStream(), true))
                     {
                         return await reader.ReadToEndAsync();                        
                     }

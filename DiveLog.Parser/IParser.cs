@@ -2,11 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace DiveLog.Parsers
 {
     public interface IParser
     {
-        List<LogEntryDTO> ProcessDives(object data);
+        Task<List<LogEntryDTO>> ProcessDivesAsync(object data);
     }
 }

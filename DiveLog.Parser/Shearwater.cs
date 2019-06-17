@@ -9,37 +9,56 @@ using Microsoft.WindowsAzure.Storage.Blob;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace DiveLog.Parsers
 {
     public class Shearwater : IParser
     {
-        public List<LogEntryDTO> ProcessDives(object data)
+        private IConfigurationRoot builder;
+
+        public async Task<List<LogEntryDTO>> ProcessDivesAsync(object data)
         {
             if (data == null)
             {
                 throw new ArgumentNullException(nameof(data));
             }
 
-            var connectionString = AddDataToAzureStorage(data);
+            builder = new ConfigurationBuilder()
+                .SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
+                .AddJsonFile("appsettings.json", true, true)
+                .AddJsonFile("appsettings.Development.json", true, true)
+                .Build();
+
+            var blobUniqueId = await AddDataToAzureStorage(data);
+            var sqliteConnection = CreateSqliteConnection(blobUniqueId);
             return null;
         }
 
-        private string AddDataToAzureStorage(object data)
+        private object CreateSqliteConnection(string blobUniqueId)
+        {
+            throw new NotImplementedException();
+        }
+
+        private async Task<string> AddDataToAzureStorage(object data)
         {
             var uniqueId = Guid.NewGuid().ToString();
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
-                .AddJsonFile("appsettings.json", false, true)
-                .Build();
 
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(builder.GetConnectionString("DiveLogShearwaterAzureBlobStorage"));
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
             CloudBlobContainer blobContainer = blobClient.GetContainerReference("shearwater-blob-container");
-            CloudBlockBlob blob = blobContainer.GetBlockBlobReference(uniqueId);
-            blob.UploadFromByteArrayAsync(ObjectToByteArray(data), 0, 0);
 
-            return null;
+            if (await blobContainer.CreateIfNotExistsAsync())
+            {
+                await blobContainer.SetPermissionsAsync(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
+            }
+
+            CloudBlockBlob blob = blobContainer.GetBlockBlobReference(uniqueId);
+            var byteArray = ObjectToByteArray(data);
+            await blob.UploadFromByteArrayAsync(byteArray, 0, byteArray.Count<byte>());
+
+            return uniqueId;
         }
 
         private static byte[] ObjectToByteArray(object obj)

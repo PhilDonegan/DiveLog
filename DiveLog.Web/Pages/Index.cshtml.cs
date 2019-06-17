@@ -24,7 +24,7 @@ namespace DiveLog.Web.Pages
 
             var data = await FileHelpers.ProcessFormFile(DiveProfilesFile, ModelState);
             var test = new Shearwater();
-            test.ProcessDives(data);
+            await test.ProcessDivesAsync(data);
             Console.WriteLine(data);
             
 
