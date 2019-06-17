@@ -11,6 +11,8 @@ using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Data.SQLite;
+using Microsoft.AspNetCore.Http;
 
 namespace DiveLog.Parsers
 {
@@ -18,7 +20,7 @@ namespace DiveLog.Parsers
     {
         private IConfigurationRoot builder;
 
-        public async Task<List<LogEntryDTO>> ProcessDivesAsync(object data)
+        public async Task<List<LogEntryDTO>> ProcessDivesAsync(IFormFile data)
         {
             if (data == null)
             {
@@ -31,19 +33,51 @@ namespace DiveLog.Parsers
                 .AddJsonFile("appsettings.Development.json", true, true)
                 .Build();
 
-            var blobUniqueId = await AddDataToAzureStorage(data);
-            var sqliteConnection = CreateSqliteConnection(blobUniqueId);
+            var path = await AddDataToStorage(data);
+            var sqliteConnection = CreateSqliteConnection(path);
+            var dives = ExtractDives(sqliteConnection);
+            return dives;
+        }
+
+        private List<LogEntryDTO> ExtractDives(SQLiteConnection sqliteConnection)
+        {
+            sqliteConnection.Open();
+            string sql = "SELECT * FROM dive_logs";
+            using (var command = new SQLiteCommand(sql, sqliteConnection))
+            {
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        Console.WriteLine($"Id: {reader["id"]}, Dive#:{reader["number"]}, MaxDepth: {reader["maxDepth"].ToString()}");
+                    }
+                }
+            }
+
             return null;
         }
 
-        private object CreateSqliteConnection(string blobUniqueId)
+        private SQLiteConnection CreateSqliteConnection(string path)
         {
-            throw new NotImplementedException();
+            return new SQLiteConnection($"Data Source={path}");
+        }
+
+        private async Task<string> AddDataToStorage(IFormFile data)
+        {
+            var uniqueId = $"{Guid.NewGuid().ToString()}.db";
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", uniqueId);
+
+            using (var stream = new FileStream(path, FileMode.Create))
+            {
+                await data.CopyToAsync(stream);
+            }
+
+            return path;
         }
 
         private async Task<string> AddDataToAzureStorage(object data)
         {
-            var uniqueId = Guid.NewGuid().ToString();
+            var uniqueId = $"{Guid.NewGuid().ToString()}.db";
 
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(builder.GetConnectionString("DiveLogShearwaterAzureBlobStorage"));
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
