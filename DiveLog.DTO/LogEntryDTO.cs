@@ -7,6 +7,8 @@ namespace DiveLog.DTO
     [Serializable]
     public class LogEntryDTO
     {
+        public string ExternalId { get; set; }
+
         public DateTime DiveDate { get; set; }
 
         public DiveType DiveType { get; set; }

@@ -13,6 +13,8 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Data.SQLite;
 using Microsoft.AspNetCore.Http;
+using System.Globalization;
+using DiveLog.Parser.Extension;
 
 namespace DiveLog.Parsers
 {
@@ -51,14 +53,30 @@ namespace DiveLog.Parsers
             try
             {
                 sqliteConnection.Open();
-                string sql = "SELECT * FROM dive_logs";
+                string sql = "SELECT id, CAST(startDate as nvarchar(10)) as stringStartDate, maxTime, maxDepth FROM dive_logs";
                 using (var command = new SQLiteCommand(sql, sqliteConnection))
                 {
                     using (var reader = command.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            Console.WriteLine($"Id: {reader["id"]}, Dive#:{reader["number"]}, MaxDepth: {reader["maxDepth"].ToString()}");
+                            var dive = new LogEntryDTO();
+                            dive.ExternalId = reader["id"].ToString();
+                            dive.DiveDate = DateTimeExtensions.FromJulianDate(Convert.ToDouble(reader["stringStartDate"]));
+
+                            //var dive = new LogEntryDTO
+                            //{
+                            //    ExternalId = reader["id"].ToString(),
+                            //    DiveDate = DateTimeExtensions.FromJulianDate((double)reader["stringStartDate"]),
+                            //    DiveLength = TimeSpan.FromMinutes(Convert.ToInt32(reader["maxTime"])),
+                            //    FractionHe = 0,
+                            //    FractionO2 = 0,
+                            //    DiveType = DTO.Types.DiveType.CCR,
+                            //    MaxDepth = Convert.ToDecimal(reader["maxDepth"]),
+                            //    SampleRate = 0
+                            //};
+
+                            dives.Add(dive);                            
                         }
                     }
                 }
@@ -77,7 +95,7 @@ namespace DiveLog.Parsers
 
         private SQLiteConnection CreateSqliteConnection(string path)
         {
-            return new SQLiteConnection($"Data Source={path}");
+            return new SQLiteConnection($"Data Source={path};datetimeformat={CultureInfo.CurrentCulture}");
         }
 
         private async Task<string> AddDataToStorage(IFormFile data)
