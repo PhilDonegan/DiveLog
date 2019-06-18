@@ -36,25 +36,43 @@ namespace DiveLog.Parsers
             var path = await AddDataToStorage(data);
             var sqliteConnection = CreateSqliteConnection(path);
             var dives = ExtractDives(sqliteConnection);
+            DeleteUpload(path);
             return dives;
+        }
+
+        private void DeleteUpload(string path)
+        {
+            File.Delete(path);
         }
 
         private List<LogEntryDTO> ExtractDives(SQLiteConnection sqliteConnection)
         {
-            sqliteConnection.Open();
-            string sql = "SELECT * FROM dive_logs";
-            using (var command = new SQLiteCommand(sql, sqliteConnection))
+            List<LogEntryDTO> dives = new List<LogEntryDTO>();
+            try
             {
-                using (var reader = command.ExecuteReader())
+                sqliteConnection.Open();
+                string sql = "SELECT * FROM dive_logs";
+                using (var command = new SQLiteCommand(sql, sqliteConnection))
                 {
-                    while (reader.Read())
+                    using (var reader = command.ExecuteReader())
                     {
-                        Console.WriteLine($"Id: {reader["id"]}, Dive#:{reader["number"]}, MaxDepth: {reader["maxDepth"].ToString()}");
+                        while (reader.Read())
+                        {
+                            Console.WriteLine($"Id: {reader["id"]}, Dive#:{reader["number"]}, MaxDepth: {reader["maxDepth"].ToString()}");
+                        }
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                Console.Write(ex.Message);
+            }
+            finally
+            {
+                sqliteConnection.Close();
+            }
 
-            return null;
+            return dives;
         }
 
         private SQLiteConnection CreateSqliteConnection(string path)
@@ -65,11 +83,28 @@ namespace DiveLog.Parsers
         private async Task<string> AddDataToStorage(IFormFile data)
         {
             var uniqueId = $"{Guid.NewGuid().ToString()}.db";
-            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", uniqueId);
+
+            if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads")))
+            {
+                Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads"));
+            }
+
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", uniqueId);
+            var storeUpload = bool.TryParse(builder.GetSection("StoreUploads").Value, out _);
 
             using (var stream = new FileStream(path, FileMode.Create))
             {
                 await data.CopyToAsync(stream);
+                if (storeUpload)
+                {
+                    var debugUploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "debug");
+                    if (!Directory.Exists(debugUploadPath))
+                    {
+                        Directory.CreateDirectory(debugUploadPath);
+                    }
+
+                    File.Copy(path, Path.Combine(debugUploadPath, uniqueId));                    
+                }
             }
 
             return path;
