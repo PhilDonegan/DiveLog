@@ -62,7 +62,7 @@ namespace DiveLog.Parsers
                         {
                             var dive = new LogEntryDTO();
                             dive.ExternalId = reader["id"].ToString();
-                            dive.DiveDate = DateTimeExtensions.FromJulianDate(Convert.ToDouble(reader["stringStartDate"]));
+                            dive.DiveDate = DateTime.FromOADate(Convert.ToDouble(reader["stringStartDate"]));
 
                             //var dive = new LogEntryDTO
                             //{
@@ -76,7 +76,8 @@ namespace DiveLog.Parsers
                             //    SampleRate = 0
                             //};
 
-                            dives.Add(dive);                            
+                            dives.Add(dive);
+                            reader.NextResult();
                         }
                     }
                 }
