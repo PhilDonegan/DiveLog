@@ -22,18 +22,17 @@ namespace DiveLog.Web.Pages
                 return Page();
             }
 
-            var data = await FileHelpers.ProcessFormFile(DiveProfilesFile, ModelState);
+            //var data = await FileHelpers.ProcessFormFile(DiveProfilesFile, ModelState);
             var test = new Shearwater();
-            await test.ProcessDivesAsync(DiveProfilesFile);
-            Console.WriteLine(data);
+            var dives = await test.ProcessDivesAsync(DiveProfilesFile);
+            var result = await APIHelper.UploadDivesToAPI(dives);
             
-
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            ViewData["DiveProfiles"] = data;
+            ViewData["DiveProfiles"] = dives;
             return Page();
         }
     }

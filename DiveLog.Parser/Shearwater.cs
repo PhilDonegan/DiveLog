@@ -59,25 +59,44 @@ namespace DiveLog.Parsers
                     using (var reader = command.ExecuteReader())
                     {
                         while (reader.Read())
-                        {
+                        { 
                             var dive = new LogEntryDTO();
                             dive.ExternalId = reader["id"].ToString();
                             dive.DiveDate = DateTime.FromOADate(Convert.ToDouble(reader["stringStartDate"]));
+                            dive.MaxDepth = Convert.ToDecimal(reader["maxDepth"]);
+                            dive.DiveLength = TimeSpan.FromMinutes(Convert.ToInt32(reader["maxTime"]));
+                            dive.DiveType = DTO.Types.DiveType.CCR;
 
-                            //var dive = new LogEntryDTO
-                            //{
-                            //    ExternalId = reader["id"].ToString(),
-                            //    DiveDate = DateTimeExtensions.FromJulianDate((double)reader["stringStartDate"]),
-                            //    DiveLength = TimeSpan.FromMinutes(Convert.ToInt32(reader["maxTime"])),
-                            //    FractionHe = 0,
-                            //    FractionO2 = 0,
-                            //    DiveType = DTO.Types.DiveType.CCR,
-                            //    MaxDepth = Convert.ToDecimal(reader["maxDepth"]),
-                            //    SampleRate = 0
-                            //};
+                            dive.DataPoints = new List<DataPointDTO>();
 
                             dives.Add(dive);
-                            reader.NextResult();
+                        } 
+                    }
+                }
+
+                string sqllog = "SELECT id, diveLogId, currentTime, currentDepth, fractionO2, fractionHe, waterTemp, averagePPO2 FROM dive_log_records WHERE diveLogId =";
+                foreach(var dive in dives)
+                {
+                    using (var command = new SQLiteCommand(sqllog + dive.ExternalId, sqliteConnection))
+                    {
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                if (dive.FractionHe == 0 && dive.FractionO2 == 0)
+                                {
+                                    dive.FractionO2 = Convert.ToDecimal(reader["fractionO2"]);
+                                    dive.FractionHe = Convert.ToDecimal(reader["fractionHe"]);
+                                }
+
+                                var dataPoint = new DataPointDTO();
+                                dataPoint.AveragePPO2 = Convert.ToDecimal(reader["averagePPO2"]);
+                                dataPoint.Depth = Convert.ToDecimal(reader["currentDepth"]);
+                                dataPoint.Time = Convert.ToInt32(reader["currentTime"]);
+                                dataPoint.WaterTemp = Convert.ToInt16(reader["waterTemp"]);
+
+                                dive.DataPoints.Add(dataPoint);
+                            }
                         }
                     }
                 }
