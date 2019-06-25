@@ -68,7 +68,6 @@ namespace DiveLog.Parsers
                             dive.DiveType = DTO.Types.DiveType.CCR;
 
                             dive.DataPoints = new List<DataPointDTO>();
-
                             dives.Add(dive);
                         } 
                     }

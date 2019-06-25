@@ -32,5 +32,7 @@ namespace DiveLog.DAL.Models
 
         [Column(TypeName = "decimal(4, 2)")]
         public decimal FractionHe { get; set; }
+
+        public string HashCode { get; set; }
     }
 }
