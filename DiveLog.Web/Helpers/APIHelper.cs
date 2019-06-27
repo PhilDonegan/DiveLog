@@ -1,8 +1,11 @@
 ﻿using DiveLog.DTO;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace DiveLog.Web.Helpers
@@ -13,7 +16,14 @@ namespace DiveLog.Web.Helpers
 
         static APIHelper()
         {
-            _client.BaseAddress = new Uri("https://divelogapi20190611082926.azurewebsites.net");
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
+                .AddJsonFile("appsettings.json", true, true)
+                .AddJsonFile("appsettings.Development.json", true, true)
+                .Build();
+
+            var divelogAPIUri = builder.GetSection("DiveLogAPIUri").Value;
+            _client.BaseAddress = new Uri(divelogAPIUri);
             _client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
         }
 

@@ -64,9 +64,9 @@ namespace DiveLog.API.Controllers
             context.SaveChanges();
         }
 
-        [HttpPost]
-        public void PostList([FromBody] IEnumerable<LogEntry> logEntries)
-        { }
+        //[HttpPost]
+        //public void PostList([FromBody] List<LogEntry> logEntries)
+        //{ }
 
         // PUT api/values/5
         [HttpPut("{id}")]
