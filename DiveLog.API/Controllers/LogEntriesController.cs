@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
+using DiveLog.API.Helpers;
 using DiveLog.DAL;
 using DiveLog.DAL.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -50,8 +53,20 @@ namespace DiveLog.API.Controllers
         [HttpPost]
         public void Post([FromBody] LogEntry value)
         {
+            var hash = HashGenerator.GenerateKey(value.DataPoints);
+            if (context.LogEntries.Any(x => x.HashCode.Equals(hash)))
+            {
+                throw new InvalidOperationException("Log entry already exists.");
+            }
+            
+            value.HashCode = hash;
             context.LogEntries.Add(value);
+            context.SaveChanges();
         }
+
+        [HttpPost]
+        public void PostList([FromBody] IEnumerable<LogEntry> logEntries)
+        { }
 
         // PUT api/values/5
         [HttpPut("{id}")]

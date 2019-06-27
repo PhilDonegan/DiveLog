@@ -7,6 +7,7 @@ using System.Text;
 
 namespace DiveLog.DAL.Models
 {
+    [Serializable]
     public class LogEntry
     {
         [Key]
