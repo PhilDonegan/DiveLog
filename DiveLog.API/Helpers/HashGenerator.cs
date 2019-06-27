@@ -14,17 +14,14 @@ namespace DiveLog.API.Helpers
         {
             string hashString;
 
-            //Catch unuseful parameter values
             if (sourceObject == null)
             {
                 throw new ArgumentNullException("Null as parameter is not allowed");
             }
             else
             {
-                //We determine if the passed object is really serializable.
                 try
                 {
-                    //Now we begin to do the real work.
                     hashString = ComputeHash(ObjectToByteArray(sourceObject));
                     return hashString;
                 }
@@ -48,7 +45,6 @@ namespace DiveLog.API.Helpers
                     sb.Append(result[i].ToString("X2"));
                 }
 
-                // And return it
                 return sb.ToString();
             }
             catch 
@@ -58,9 +54,9 @@ namespace DiveLog.API.Helpers
             }
         }
 
-        private static readonly Object locker = new Object();
+        private static readonly object locker = new object();
 
-        private static byte[] ObjectToByteArray(Object objectToSerialize)
+        private static byte[] ObjectToByteArray(object objectToSerialize)
         {
             MemoryStream fs = new MemoryStream();
             BinaryFormatter formatter = new BinaryFormatter();
@@ -70,6 +66,7 @@ namespace DiveLog.API.Helpers
                 {
                     formatter.Serialize(fs, objectToSerialize);
                 }
+
                 return fs.ToArray();
             }
             catch (SerializationException se)
