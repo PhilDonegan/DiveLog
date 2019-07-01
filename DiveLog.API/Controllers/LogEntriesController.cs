@@ -4,9 +4,11 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using DiveLog.API.Helpers;
 using DiveLog.DAL;
 using DiveLog.DAL.Models;
+using DiveLog.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,57 +18,63 @@ namespace DiveLog.API.Controllers
     [ApiController]
     public class LogEntriesController : ControllerBase
     {
-        private readonly DiveLogContext context;
+        private readonly DiveLogContext _context;
+        private readonly IMapper _mapper;
 
-        public LogEntriesController(DiveLogContext context)
+        public LogEntriesController(
+            DiveLogContext context,
+            IMapper mapper)
         {
-            this.context = context ?? throw new ArgumentNullException(nameof(context));
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         // GET api/values
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<LogEntry>>> Get()
+        public async Task<ActionResult<IEnumerable<LogEntryDTO>>> Get()
         {
-            var results = await context.LogEntries.ToListAsync();
+            var results = await _context.LogEntries.ToListAsync();
             if (results == null)
             {
                 return NotFound();
             }
 
-            return results;
+            return _mapper.Map<List<LogEntry>, List<LogEntryDTO>>(results);
         }
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<LogEntry>> Get(long id)
+        public async Task<ActionResult<LogEntryDTO>> Get(long id)
         {
-            var result = await context.LogEntries.FindAsync(id);
+            var result = await _context.LogEntries.FindAsync(id);
             if (result == null)
             {
                 return NotFound();
             }
 
-            return result;
+            return _mapper.Map<LogEntry, LogEntryDTO>(result);
         }
 
         // POST api/values
-        [HttpPost]
-        public void Post([FromBody] LogEntry value)
-        {
-            var hash = HashGenerator.GenerateKey(value.DataPoints);
-            if (context.LogEntries.Any(x => x.HashCode.Equals(hash)))
-            {
-                throw new InvalidOperationException("Log entry already exists.");
-            }
+        ////[HttpPost]
+        ////public void Post([FromBody] LogEntry value)
+        ////{
+        ////    var hash = HashGenerator.GenerateKey(value.DataPoints);
+        ////    if (context.LogEntries.Any(x => x.HashCode.Equals(hash)))
+        ////    {
+        ////        throw new InvalidOperationException("Log entry already exists.");
+        ////    }
             
-            value.HashCode = hash;
-            context.LogEntries.Add(value);
-            context.SaveChanges();
-        }
+        ////    value.HashCode = hash;
+        ////    context.LogEntries.Add(value);
+        ////    context.SaveChanges();
+        ////}
 
-        //[HttpPost]
-        //public void PostList([FromBody] List<LogEntry> logEntries)
-        //{ }
+        [HttpPost]
+        public IActionResult PostList(List<LogEntryDTO> logEntries)
+        {
+            return NotFound();
+        }
 
         // PUT api/values/5
         [HttpPut("{id}")]

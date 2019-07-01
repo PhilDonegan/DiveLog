@@ -9,6 +9,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="8.1.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="6.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Swagger" Version="1.0.0" />
@@ -17,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DiveLog.DAL\DiveLog.DAL.csproj" />
+    <ProjectReference Include="..\DiveLog.DTO\DiveLog.DTO.csproj" />
   </ItemGroup>
 
 </Project>
