@@ -32,7 +32,7 @@ namespace DiveLog.API.Controllers
 
         // GET api/values
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<LogEntryDTO>>> Get()
+        public async Task<ActionResult<List<LogEntryDTO>>> Get()
         {
             var results = await _context.LogEntries.ToListAsync();
             if (results == null)
@@ -58,7 +58,7 @@ namespace DiveLog.API.Controllers
 
         [HttpPost]
         [ProducesResponseType(typeof(LogEntryDTO), StatusCodes.Status201Created)]
-        public IActionResult PostList([FromBody] List<LogEntryDTO> logEntries)
+        public void PostList([FromBody]List<LogEntryDTO> logEntries)
         {
             var entities = _mapper.Map<List<LogEntryDTO>, List<LogEntry>>(logEntries);
 
@@ -75,7 +75,7 @@ namespace DiveLog.API.Controllers
 
             _context.SaveChanges();
 
-            return CreatedAtAction("PostList", new { LogEntries = _mapper.Map<List<LogEntry>, List<LogEntryDTO>>(entities) });
+            //return CreatedAtAction("Get", new { LogEntries = _mapper.Map<List<LogEntry>, List<LogEntryDTO>>(entities) },);
         }
     }
 }

@@ -1,11 +1,13 @@
 ﻿using DiveLog.DTO;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace DiveLog.Web.Helpers
@@ -27,12 +29,14 @@ namespace DiveLog.Web.Helpers
             _client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        public async static Task<bool> UploadDivesToAPI(IEnumerable<LogEntryDTO> dives)
+        public async static Task<bool> UploadDivesToAPI(List<LogEntryDTO> dives)
         {
-            var response = await _client.GetAsync("api/LogEntries");
+            //var response = await _client.GetAsync("api/LogEntries");
+            var json = JsonConvert.SerializeObject(dives);
+            var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
+            var response = await _client.PostAsync("api/LogEntries", stringContent);
             if (response.IsSuccessStatusCode)
             {
-                var entries = await response.Content.ReadAsStringAsync();
                 return true;
             }
 
