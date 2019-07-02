@@ -18,4 +18,5 @@ OSTC parser
 Dive planner based on statisical comparision
 
 API currently deployed to here: https://divelogapi20190611082926.azurewebsites.net swagger doc at https://divelogapi20190611082926.azurewebsites.net/swagger
+
 GUI currently deployed to here: https://divelogweb20190625101544.azurewebsites.net
