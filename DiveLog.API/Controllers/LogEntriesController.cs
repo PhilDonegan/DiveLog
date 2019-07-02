@@ -9,6 +9,7 @@ using DiveLog.API.Helpers;
 using DiveLog.DAL;
 using DiveLog.DAL.Models;
 using DiveLog.DTO;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -55,37 +56,26 @@ namespace DiveLog.API.Controllers
             return _mapper.Map<LogEntry, LogEntryDTO>(result);
         }
 
-        // POST api/values
-        ////[HttpPost]
-        ////public void Post([FromBody] LogEntry value)
-        ////{
-        ////    var hash = HashGenerator.GenerateKey(value.DataPoints);
-        ////    if (context.LogEntries.Any(x => x.HashCode.Equals(hash)))
-        ////    {
-        ////        throw new InvalidOperationException("Log entry already exists.");
-        ////    }
-            
-        ////    value.HashCode = hash;
-        ////    context.LogEntries.Add(value);
-        ////    context.SaveChanges();
-        ////}
-
         [HttpPost]
-        public IActionResult PostList(List<LogEntryDTO> logEntries)
+        [ProducesResponseType(typeof(LogEntryDTO), StatusCodes.Status201Created)]
+        public IActionResult PostList([FromBody] List<LogEntryDTO> logEntries)
         {
-            return NotFound();
-        }
+            var entities = _mapper.Map<List<LogEntryDTO>, List<LogEntry>>(logEntries);
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
+            foreach (var logEntry in entities)
+            {
+                var hash = HashGenerator.GenerateKey(logEntry.DataPoints);
+                if (_context.LogEntries.Any(x => x.HashCode.Equals(hash)))
+                {
+                    continue;
+                }
 
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+                _context.LogEntries.Add(logEntry);
+            }
+
+            _context.SaveChanges();
+
+            return CreatedAtAction("PostList", new { LogEntries = _mapper.Map<List<LogEntry>, List<LogEntryDTO>>(entities) });
         }
     }
 }

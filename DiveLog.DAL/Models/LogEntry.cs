@@ -13,6 +13,8 @@ namespace DiveLog.DAL.Models
         [Key]
         public long Id { get; set; }
 
+        public string ExternalId { get; set; }
+
         public DateTime DiveDate { get; set; }
 
         public DiveType DiveType { get; set; }

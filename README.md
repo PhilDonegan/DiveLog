@@ -11,5 +11,11 @@ Shearwater parser
 ## Phase 3 (in progress)
 GUI to review dive profiles.
 
-## Phase 4
+## Phase 4 
+OSTC parser
+
+## Phase 5
 Dive planner based on statisical comparision
+
+API currently deployed to here: https://divelogapi20190611082926.azurewebsites.net swagger doc at https://divelogapi20190611082926.azurewebsites.net/swagger
+GUI currently deployed to here: https://divelogweb20190625101544.azurewebsites.net
