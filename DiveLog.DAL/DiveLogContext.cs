@@ -12,6 +12,12 @@ namespace DiveLog.DAL
         {
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<LogEntry>()
+                .HasIndex(l => l.HashCode).IsUnique(true);
+        }
+
         public DbSet<LogEntry> LogEntries { get; set; }
     }
 }

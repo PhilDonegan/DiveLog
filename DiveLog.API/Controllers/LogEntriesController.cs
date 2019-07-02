@@ -69,7 +69,7 @@ namespace DiveLog.API.Controllers
                 {
                     continue;
                 }
-
+                logEntry.HashCode = hash;
                 _context.LogEntries.Add(logEntry);
             }
 

@@ -31,8 +31,9 @@ namespace DiveLog.Web.Helpers
 
         public async static Task<bool> UploadDivesToAPI(List<LogEntryDTO> dives)
         {
-            //var response = await _client.GetAsync("api/LogEntries");
-            var json = JsonConvert.SerializeObject(dives);
+            // TODO: Remove this an upload all the dives.
+            var test = dives.Take(10).ToList();
+            var json = JsonConvert.SerializeObject(test);
             var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
             var response = await _client.PostAsync("api/LogEntries", stringContent);
             if (response.IsSuccessStatusCode)
