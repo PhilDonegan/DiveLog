@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using DiveLog.Web.Helpers;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +17,7 @@ namespace DiveLog.Web.Pages
                 return Page();
             }
 
-            ViewData["DiveLogs"] = dives;
+            ViewData["DiveLogs"] = dives.First();
             return Page();
         }
     }
