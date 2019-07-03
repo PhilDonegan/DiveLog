@@ -24,7 +24,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiveLog.Parser", "DiveLog.P
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiveLog.DTO", "DiveLog.DTO\DiveLog.DTO.csproj", "{D819EEFF-8DE9-4838-A227-1BD129EB08B7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiveLog.API.Test", "DiveLog.API.Test\DiveLog.API.Test.csproj", "{59470289-6D5F-484A-97BB-E83B34432D72}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiveLog.API.Test", "DiveLog.API.Test\DiveLog.API.Test.csproj", "{59470289-6D5F-484A-97BB-E83B34432D72}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

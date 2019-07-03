@@ -43,5 +43,12 @@ namespace DiveLog.Web.Helpers
 
             return false;
         }
+
+        public async static Task<List<LogEntryDTO>> GetAllDives()
+        {
+            var repsonse = await _client.GetStringAsync("api/LogEntries");
+            var dives = JsonConvert.DeserializeObject<List<LogEntryDTO>>(repsonse);
+            return dives;
+        }
     }
 }

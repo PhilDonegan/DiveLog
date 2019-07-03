@@ -1,0 +1,16 @@
+﻿@page
+@model DiveLog.Web.Pages.LogViewerModel
+@{
+	ViewData["Title"] = "Log Viewer";
+}
+
+<div class="row">
+	<div class="col-md-3">
+		<a asp-page-handler="DiveLogs">Get Dive Logs</a>
+	</div>
+</div>
+
+<h3>Logs</h3>
+<div>
+	@ViewData["DiveLogs"]
+</div>

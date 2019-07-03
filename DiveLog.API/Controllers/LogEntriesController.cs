@@ -34,13 +34,21 @@ namespace DiveLog.API.Controllers
         [HttpGet]
         public async Task<ActionResult<List<LogEntryDTO>>> Get()
         {
-            var results = await _context.LogEntries.ToListAsync();
+            var results = await _context.LogEntries.Include(x => x.DataPoints).ToListAsync();
             if (results == null)
             {
                 return NotFound();
             }
-
-            return _mapper.Map<List<LogEntry>, List<LogEntryDTO>>(results);
+            try
+            {
+                var dtos = _mapper.Map<List<LogEntry>, List<LogEntryDTO>>(results);
+                return dtos;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
         }
 
         // GET api/values/5
