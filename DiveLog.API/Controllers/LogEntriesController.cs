@@ -39,16 +39,9 @@ namespace DiveLog.API.Controllers
             {
                 return NotFound();
             }
-            try
-            {
-                var dtos = _mapper.Map<List<LogEntry>, List<LogEntryDTO>>(results);
-                return dtos;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                throw;
-            }
+
+            var dtos = _mapper.Map<List<LogEntry>, List<LogEntryDTO>>(results);
+            return dtos;
         }
 
         // GET api/values/5
