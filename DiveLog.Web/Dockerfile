@@ -11,10 +11,10 @@ COPY ["DiveLog.DTO/DiveLog.DTO.csproj", "DiveLog.DTO/"]
 RUN dotnet restore "DiveLog.Web/DiveLog.Web.csproj"
 COPY . .
 WORKDIR "/src/DiveLog.Web"
-RUN dotnet build "DiveLog.Web.csproj" -c Release -o /app
+RUN dotnet build "DiveLog.Web.csproj" -c Debug -o /app
 
 FROM build AS publish
-RUN dotnet publish "DiveLog.Web.csproj" -c Release -o /app
+RUN dotnet publish "DiveLog.Web.csproj" -c Debug -o /app
 
 FROM base AS final
 WORKDIR /app
