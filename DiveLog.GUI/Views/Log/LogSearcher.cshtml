@@ -1,6 +1,55 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model LogSearcherModel
 @{
+	ViewData["Title"] = "Dive Log Searcher";
+}
+
+<div class="row">
+	<div class="col-md-3">
+		<a asp-area="" asp-controller="Log" asp-action="GetDives">Get Dives</a>
+	</div>
+</div>
+
+<h3>Dive Logs</h3>
+<div id="chartContainer"></div>
+
+
+@section Scripts {
+	<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+	<script type="text/javascript">
+		$(function () {
+			var chart = new CanvasJS.Chart("chartContainer", {
+				title: {
+					text: "Dive Profile"
+				},
+				animationEnabled: true,
+				axisY: {
+					includeZero: false,
+					prefix: "",
+					reversed: true,
+					title: "Depth (m)"
+				},
+				axisX: {
+					title: "Time (min)"
+				},
+				toolTip: {
+					shared: true,
+					content: "<span style='\"'color: {color};'\"'><strong>{name}</strong></span> <span style='\"'color: dimgrey;'\"'>{y}</span> "
+				},
+				legend: {
+					fontSize: 13
+				},
+				data: [
+					{
+						type: "area",
+						markerSize: 0,
+						color: "rgba(54,158,173,.6)",
+						dataPoints: @Html.Raw(TempData["Datapoints"])
+					}
+				]
+			});
+
+			chart.render();
+		});
+	</script>
 }
 

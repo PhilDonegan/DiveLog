@@ -12,24 +12,23 @@ using System.Threading.Tasks;
 
 namespace DiveLog.GUI.Helpers
 {
-    public class APIHelper
+    public class APIHelper : IDisposable
     {
         private static HttpClient _client = new HttpClient();
 
-        static APIHelper()
+        public APIHelper(IConfiguration configuration)
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
-                .AddJsonFile("appsettings.json", true, true)
-                .AddJsonFile("appsettings.Development.json", true, true)
-                .Build();
+            if (configuration == null)
+            {
+                throw new ArgumentNullException(nameof(configuration));
+            }
 
-            var divelogAPIUri = builder.GetSection("DiveLogAPIUri").Value;
+            var divelogAPIUri = configuration.GetSection("DiveLogAPIUri").Value;
             _client.BaseAddress = new Uri(divelogAPIUri);
             _client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        public async static Task<bool> UploadDivesToAPI(List<LogEntryDTO> dives)
+        public async Task<bool> UploadDivesToAPI(List<LogEntryDTO> dives)
         {
             // TODO: Remove this an upload all the dives.
             var test = dives.Take(10).ToList();
@@ -44,11 +43,23 @@ namespace DiveLog.GUI.Helpers
             return false;
         }
 
-        public async static Task<List<LogEntryDTO>> GetAllDives()
+        public async Task<List<LogEntryDTO>> GetAllDives()
         {
-            var repsonse = await _client.GetStringAsync("api/LogEntries");
-            var dives = JsonConvert.DeserializeObject<List<LogEntryDTO>>(repsonse);
-            return dives;
+            try
+            {
+                var repsonse = await _client.GetStringAsync("api/LogEntries");
+                var dives = JsonConvert.DeserializeObject<List<LogEntryDTO>>(repsonse);
+                return dives;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public void Dispose()
+        {
+            _client.Dispose();
         }
     }
 }
