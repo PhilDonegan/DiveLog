@@ -6,6 +6,7 @@ namespace DiveLog.DAL.Models.Types
 {
     public enum DiveOutcome
     {
-        Success = 0
+        Unknown = 0,
+        Success
     }
 }

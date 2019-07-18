@@ -66,6 +66,7 @@ namespace DiveLog.Parsers
                             dive.MaxDepth = Convert.ToDecimal(reader["maxDepth"]);
                             dive.DiveLength = TimeSpan.FromMinutes(Convert.ToInt32(reader["maxTime"]));
                             dive.DiveType = DTO.Types.DiveType.CCR;
+                            dive.Outcome = DTO.Types.DiveOutcome.Unknown;
 
                             dive.DataPoints = new List<DataPointDTO>();
                             dives.Add(dive);

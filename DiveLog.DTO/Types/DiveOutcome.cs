@@ -2,6 +2,7 @@
 {
     public enum DiveOutcome
     {
-        Success = 0
+        Unknown = 0,
+        Success
     }
 }
