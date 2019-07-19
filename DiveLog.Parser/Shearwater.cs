@@ -20,7 +20,12 @@ namespace DiveLog.Parsers
 {
     public class Shearwater : IParser
     {
-        private IConfigurationRoot builder;
+        private IConfiguration _builder;
+
+        public Shearwater(IConfiguration builder)
+        {
+            _builder = builder ?? throw new ArgumentNullException(nameof(builder));
+        }
 
         public async Task<List<LogEntryDTO>> ProcessDivesAsync(IFormFile data)
         {
@@ -28,12 +33,6 @@ namespace DiveLog.Parsers
             {
                 throw new ArgumentNullException(nameof(data));
             }
-
-            builder = new ConfigurationBuilder()
-                .SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
-                .AddJsonFile("appsettings.json", true, true)
-                .AddJsonFile("appsettings.Development.json", true, true)
-                .Build();
 
             var path = await AddDataToStorage(data);
             var sqliteConnection = CreateSqliteConnection(path);
@@ -128,7 +127,7 @@ namespace DiveLog.Parsers
             }
 
             var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", uniqueId);
-            var storeUpload = bool.TryParse(builder.GetSection("StoreUploads").Value, out _);
+            var storeUpload = bool.TryParse(_builder.GetSection("StoreUploads").Value, out _);
 
             using (var stream = new FileStream(path, FileMode.Create))
             {
@@ -152,7 +151,7 @@ namespace DiveLog.Parsers
         {
             var uniqueId = $"{Guid.NewGuid().ToString()}.db";
 
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(builder.GetConnectionString("DiveLogShearwaterAzureBlobStorage"));
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(_builder.GetConnectionString("DiveLogShearwaterAzureBlobStorage"));
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
             CloudBlobContainer blobContainer = blobClient.GetContainerReference("shearwater-blob-container");
 

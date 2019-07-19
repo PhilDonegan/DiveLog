@@ -1,5 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using DiveLog.GUI.Helpers;
+using DiveLog.Parser.Types;
+using DiveLog.Parsers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -33,6 +37,18 @@ namespace DiveLog.GUI
                 new PhysicalFileProvider(
                     Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")));
             services.AddSingleton<APIHelper>();
+            services.AddScoped<Shearwater>();
+
+            services.AddScoped<Func<SupportedParsers, IParser>>(selector => key =>
+            {
+                switch (key)
+                {
+                    case SupportedParsers.Shearwater:
+                        return selector.GetService<Shearwater>();
+                    default:
+                        throw new KeyNotFoundException();
+                }
+            });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
