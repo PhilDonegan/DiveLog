@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DiveLog.API.Helpers;
 using DiveLog.DAL;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -72,6 +73,7 @@ namespace DiveLog.API
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Dive Log API V1");
             });
 
+            app.UseMiddleware<GzipRequestMiddleware>();
             app.UseMvc();
 
         }

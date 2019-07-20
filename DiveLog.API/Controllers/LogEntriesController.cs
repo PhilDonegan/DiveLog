@@ -27,8 +27,7 @@ namespace DiveLog.API.Controllers
             IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-        }
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));        }
 
         // GET api/values
         [HttpGet]
@@ -62,6 +61,7 @@ namespace DiveLog.API.Controllers
         public void PostList([FromBody]List<LogEntryDTO> logEntries)
         {
             var entities = _mapper.Map<List<LogEntryDTO>, List<LogEntry>>(logEntries);
+            _context.ChangeTracker.AutoDetectChangesEnabled = false;
 
             foreach (var logEntry in entities)
             {

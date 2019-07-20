@@ -1,5 +1,6 @@
 ﻿using DiveLog.DTO;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -9,38 +10,51 @@ using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using WebApiContrib.Content;
 
 namespace DiveLog.GUI.Helpers
 {
     public class APIHelper : IDisposable
     {
-        private static HttpClient _client = new HttpClient();
+        private static HttpClient _client;
+        private readonly ILogger _logger;
 
-        public APIHelper(IConfiguration configuration)
+        public APIHelper(
+            IConfiguration configuration,
+            ILogger<APIHelper> logger)
         {
-            if (configuration == null)
-            {
-                throw new ArgumentNullException(nameof(configuration));
-            }
+            _ = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
             var divelogAPIUri = configuration.GetSection("DiveLogAPIUri").Value;
+
+            _client = new HttpClient();
             _client.BaseAddress = new Uri(divelogAPIUri);
             _client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+            _client.Timeout = new TimeSpan(0, 5, 0);
         }
 
         public async Task<bool> UploadDivesToAPI(List<LogEntryDTO> dives)
         {
             // TODO: Remove this an upload all the dives.
-            var test = dives.Take(10).ToList();
-            var json = JsonConvert.SerializeObject(test);
-            var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
-            var response = await _client.PostAsync("api/LogEntries", stringContent);
-            if (response.IsSuccessStatusCode)
+            //var test = dives.Take(10).ToList();
+            var json = JsonConvert.SerializeObject(dives);
+            var stringContent = new StringContent(json, Encoding.UTF8, "application/json");
+            var compressedContent = new CompressedContent(stringContent, "gzip");
+            try
             {
-                return true;
-            }
+                var response = await _client.PostAsync("api/LogEntries", compressedContent);
+                if (response.IsSuccessStatusCode)
+                {
+                    return true;
+                }
 
-            return false;
+                return false;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public async Task<List<LogEntryDTO>> GetAllDives()

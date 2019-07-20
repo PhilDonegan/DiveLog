@@ -36,7 +36,7 @@ namespace DiveLog.GUI
             services.AddSingleton<IFileProvider>(
                 new PhysicalFileProvider(
                     Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")));
-            services.AddSingleton<APIHelper>();
+            services.AddTransient<APIHelper>();
             services.AddScoped<Shearwater>();
 
             services.AddScoped<Func<SupportedParsers, IParser>>(selector => key =>

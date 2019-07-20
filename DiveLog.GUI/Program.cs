@@ -17,8 +17,17 @@ namespace DiveLog.GUI
             CreateWebHostBuilder(args).Build().Run();
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args)
+        {
+            return WebHost.CreateDefaultBuilder(args)
+                //.ConfigureLogging((hostingContext, logging) =>
+                //{
+                //    logging.AddConfiguration(hostingContext.Configuration.GetSection("logging"));
+                //    logging.AddConsole();
+                //    logging.AddDebug();
+                //    logging.AddEventSourceLogger();
+                //})
                 .UseStartup<Startup>();
+        }
     }
 }
