@@ -45,7 +45,7 @@ namespace DiveLog.API.Controllers
             return dtos;
         }
 
-        [Route("[action]/{query}")]
+        [Route("[action]")]
         [HttpGet]
         public async Task<ActionResult<List<LogEntryDTO>>> SearchDives([FromQuery]SearchDivesQuery query)
         {
