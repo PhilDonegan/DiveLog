@@ -61,6 +61,8 @@ namespace DiveLog.API.Controllers
         public void PostList([FromBody]List<LogEntryDTO> logEntries)
         {
             var entities = _mapper.Map<List<LogEntryDTO>, List<LogEntry>>(logEntries);
+
+            // If start seeing weird shit with missing entities may be better to create new DbContext for this one post with change tracking disabled.
             _context.ChangeTracker.AutoDetectChangesEnabled = false;
 
             foreach (var logEntry in entities)
