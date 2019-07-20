@@ -1,4 +1,5 @@
 ﻿using DiveLog.DTO;
+using DiveLog.DTO.Types;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -69,6 +70,10 @@ namespace DiveLog.GUI.Helpers
             {
                 throw ex;
             }
+        }
+
+        public async Task<List<LogEntryDTO>> SearchDives(DiveType diveType, decimal targetDepth, short targetDepthRange, TimeSpan TargetDiveLength, TimeSpan TargetDiveLengthRange)
+        {
         }
 
         public void Dispose()
