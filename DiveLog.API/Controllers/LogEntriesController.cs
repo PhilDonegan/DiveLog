@@ -32,18 +32,18 @@ namespace DiveLog.API.Controllers
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));        }
 
         // GET api/values
-        [HttpGet]
-        public async Task<ActionResult<List<LogEntryDTO>>> Get()
-        {
-            var results = await _context.LogEntries.Include(x => x.DataPoints).ToListAsync();
-            if (results == null)
-            {
-                return NotFound();
-            }
+        ////[HttpGet]
+        ////public async Task<ActionResult<List<LogEntryDTO>>> Get()
+        ////{
+        ////    var results = await _context.LogEntries.Include(x => x.DataPoints).ToListAsync();
+        ////    if (results == null)
+        ////    {
+        ////        return NotFound();
+        ////    }
 
-            var dtos = _mapper.Map<List<LogEntry>, List<LogEntryDTO>>(results);
-            return dtos;
-        }
+        ////    var dtos = _mapper.Map<List<LogEntry>, List<LogEntryDTO>>(results);
+        ////    return dtos;
+        ////}
 
         [Route("[action]")]
         [HttpGet]
@@ -78,31 +78,6 @@ namespace DiveLog.API.Controllers
             return dtos;
         }
 
-        ////[Route("{TargetDepth}/{TargetDepthRange}")]
-        ////[HttpGet]
-        ////public async Task<ActionResult<List<LogEntryDTO>>> SearchDives(decimal? TargetDepth, short? TargetDepthRange)
-        ////{
-        ////    var query = _context.LogEntries.AsQueryable();
-
-        ////    if (TargetDepth.HasValue)
-        ////    {
-        ////        var lowDepth = TargetDepth.Value - TargetDepthRange > 0 ? TargetDepth.Value - TargetDepthRange : 0;
-        ////        var highDepth = TargetDepth.Value + TargetDepthRange;
-
-        ////        query = query.Where(x => x.MaxDepth >= lowDepth && x.MaxDepth < highDepth);
-        ////    }
-
-        ////    var results = await query.Include(x => x.DataPoints).ToListAsync();
-        ////    if (results == null)
-        ////    {
-        ////        return NotFound();
-        ////    }
-
-        ////    var dtos = _mapper.Map<List<LogEntry>, List<LogEntryDTO>>(results);
-        ////    return dtos;
-        ////}
-
-        // GET api/values/5
         [HttpGet("{id}")]
         public async Task<ActionResult<LogEntryDTO>> Get(long id)
         {
@@ -117,7 +92,7 @@ namespace DiveLog.API.Controllers
 
         [HttpPost]
         [ProducesResponseType(typeof(LogEntryDTO), StatusCodes.Status201Created)]
-        public void PostList([FromBody]List<LogEntryDTO> logEntries)
+        public async void PostList([FromBody]List<LogEntryDTO> logEntries)
         {
             var entities = _mapper.Map<List<LogEntryDTO>, List<LogEntry>>(logEntries);
 
@@ -135,9 +110,7 @@ namespace DiveLog.API.Controllers
                 _context.LogEntries.Add(logEntry);
             }
 
-            _context.SaveChanges();
-
-            //return CreatedAtAction("Get", new { LogEntries = _mapper.Map<List<LogEntry>, List<LogEntryDTO>>(entities) },);
+            await _context.SaveChangesAsync();
         }
     }
 }

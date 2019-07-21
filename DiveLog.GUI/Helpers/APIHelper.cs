@@ -1,14 +1,12 @@
 ﻿using DiveLog.DTO;
 using DiveLog.DTO.Types;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net.Http;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using WebApiContrib.Content;
@@ -68,12 +66,38 @@ namespace DiveLog.GUI.Helpers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, ex.Message);
                 throw ex;
             }
         }
 
-        public async Task<List<LogEntryDTO>> SearchDives(DiveType diveType, decimal targetDepth, short targetDepthRange, TimeSpan TargetDiveLength, TimeSpan TargetDiveLengthRange)
+        public async Task<List<LogEntryDTO>> SearchDives(DiveType? diveType, decimal targetDepth, short targetDepthRange, TimeSpan TargetDiveLength, TimeSpan TargetDiveLengthRange)
         {
+            var queryParams = new Dictionary<string, string>();
+
+            if (diveType.HasValue)
+            {
+                queryParams.Add("DiveType", diveType.Value.ToString("D"));
+            }
+
+            queryParams.Add("TargetDepth", targetDepth.ToString());
+            queryParams.Add("TargetDepthRange", targetDepthRange.ToString());
+            queryParams.Add("TargetDiveLength", TargetDiveLength.ToString());
+            queryParams.Add("TargetDiveLengthRange", TargetDiveLengthRange.ToString());
+
+            var url = QueryHelpers.AddQueryString("api/LogEntries/SearchDives", queryParams);
+
+            try
+            {
+                var response = await _client.GetStringAsync(url);
+                var dives = JsonConvert.DeserializeObject<List<LogEntryDTO>>(response);
+                return dives;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                throw ex;
+            }
         }
 
         public void Dispose()

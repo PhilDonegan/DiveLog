@@ -24,6 +24,25 @@ namespace DiveLog.GUI.Controllers
             return View();
         }
 
+        public async Task<IActionResult> SearchDives(LogSearcherModel model)
+        {
+            var dives = await _apiHelper.SearchDives(
+                model.DiveType, 
+                model.TargetDepth, 
+                model.TargetDepthRange, 
+                TimeSpan.FromMinutes(model.TargetDiveTime), 
+                TimeSpan.FromMinutes(model.TargetDiveTimeRange));
+
+            if (!ModelState.IsValid)
+            {
+                return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            }
+
+            ViewData["DiveProfileResults"] = JsonConvert.SerializeObject(dives);
+            ViewData["DiveProfileCount"] = dives.Count;
+            return View("LogSearcherResults");
+        }
+
         public async Task<IActionResult> GetDives()
         {
             var dives = await _apiHelper.GetAllDives();
@@ -42,7 +61,7 @@ namespace DiveLog.GUI.Controllers
                 datapoints.Add(datapoint);
             }
 
-            TempData["Datapoints"] = JsonConvert.SerializeObject(datapoints.OrderBy(x => x.X));
+            ViewData["Datapoints"] = JsonConvert.SerializeObject(datapoints.OrderBy(x => x.X));
 
             return RedirectToAction("LogSearcher");
         }
