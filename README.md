@@ -8,17 +8,17 @@ Creation of public facing API in Azure (dockerized)
 ## Phase 2 (Done)
 Shearwater parser
 
-## Phase 3 (in progress)
+## Phase 3 (Done)
 GUI to review dive profiles.
 
-## Phase 4 
-OSTC parser
-
-## Phase 5
+## Phase 4
 More data, more parsing, more everything.
 
+## Phase 5 
+OSTC parser
+
 ## Phase 6
-Dive planner based on statisical comparision
+Dive planner based on statistical comparison
 
 API currently deployed to here: https://divelogapi20190611082926.azurewebsites.net swagger doc at https://divelogapi20190611082926.azurewebsites.net/swagger
 

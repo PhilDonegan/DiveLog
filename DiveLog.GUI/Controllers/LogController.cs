@@ -24,7 +24,7 @@ namespace DiveLog.GUI.Controllers
             return View();
         }
 
-        public async Task<IActionResult> SearchDives(LogSearcherModel model)
+        public async Task<IActionResult> LogSearcherResults(LogSearcherModel model)
         {
             var dives = await _apiHelper.SearchDives(
                 model.DiveType, 
@@ -38,9 +38,23 @@ namespace DiveLog.GUI.Controllers
                 return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
             }
 
-            ViewData["DiveProfileResults"] = JsonConvert.SerializeObject(dives);
-            ViewData["DiveProfileCount"] = dives.Count;
-            return View("LogSearcherResults");
+            var resultsModel = new LogSearcherResultsModel();
+            foreach (var dive in dives)
+            {
+                var diveProfile = new DiveProfile();
+                diveProfile.Index = dives.FindIndex(d => d.Equals(dive));
+
+                // Change this to sample data points for mini graphs
+                foreach (var dp in dive.DataPoints)
+                {
+                    var datapoint = new DataPoint(dp.Time / 10, Convert.ToDouble(dp.Depth));
+                    diveProfile.Datapoints.Add(datapoint);
+                }
+
+                resultsModel.DiveProfiles.Add(diveProfile);
+            }
+
+            return View(resultsModel);
         }
 
         public async Task<IActionResult> GetDives()

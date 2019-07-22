@@ -1,0 +1,33 @@
+﻿@model DiveProfile
+
+<div id="@string.Format("chartContainer{0}", Model.Index)" style="width: 40%; height: 300px;display: inline-block;"></div>
+
+<script type="text/javascript">
+		var chart = new CanvasJS.Chart("@string.Format("chartContainer{0}", Model.Index)", {
+			animationEnabled: true,
+			axisY: {
+				includeZero: false,
+				prefix: "",
+				reversed: true,
+				title: "Depth (m)"
+			},
+			axisX: {
+				title: "Time (min)"
+			},
+			toolTip: {
+				shared: true,
+				content: "<span style='\"'color: {color};'\"'><strong>Depth</strong></span> <span style='\"'color: dimgrey;'\"'>{y}m</span> "
+			},
+			legend: {
+				fontSize: 13
+			},
+			data: [{
+				type: "area",
+				markerSize: 0,
+				color: "rgba(54,158,173,.6)",
+				dataPoints: @Json.Serialize(Model.Datapoints.OrderBy(x => x.X))
+				}]
+		});
+
+		chart.render();
+</script>

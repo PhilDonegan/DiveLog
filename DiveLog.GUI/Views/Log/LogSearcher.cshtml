@@ -4,7 +4,7 @@
 }
 
 <div class="container">
-	<form asp-action="SearchDives">
+	<form asp-action="LogSearcherResults">
 		<div class="form-group">
 			<label asp-for="DiveType" class="control-label">Dive Type:</label>
 			<select asp-for="DiveType" asp-items="Html.GetEnumSelectList<DiveLog.DTO.Types.DiveType>()">
