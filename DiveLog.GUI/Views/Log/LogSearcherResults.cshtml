@@ -1,0 +1,17 @@
+﻿@model LogSearcherResultsModel
+@{
+	ViewData["Title"] = "Search Results";
+}
+<h2>Results</h2>
+<p>@Model.DiveProfiles.Count dives found!</p>
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+<div class="container">
+	@{
+		foreach (var profile in Model.DiveProfiles)
+		{
+			await Html.RenderPartialAsync("_DiveProfile", profile);
+		}
+	}
+</div>
+
+
