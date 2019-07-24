@@ -73,7 +73,7 @@ namespace DiveLog.Parsers
                     }
                 }
 
-                string sqllog = "SELECT id, diveLogId, currentTime, currentDepth, fractionO2, fractionHe, waterTemp, averagePPO2 FROM dive_log_records WHERE diveLogId =";
+                string sqllog = "SELECT id, diveLogId, currentTime, currentDepth, fractionO2, fractionHe, waterTemp, averagePPO2, CNSPercent FROM dive_log_records WHERE diveLogId =";
                 foreach(var dive in dives)
                 {
                     using (var command = new SQLiteCommand(sqllog + dive.ExternalId, sqliteConnection))
@@ -93,6 +93,7 @@ namespace DiveLog.Parsers
                                 dataPoint.Depth = Convert.ToDecimal(reader["currentDepth"]);
                                 dataPoint.Time = Convert.ToInt32(reader["currentTime"]);
                                 dataPoint.WaterTemp = Convert.ToInt16(reader["waterTemp"]);
+                                dataPoint.CNS = Convert.ToInt16(reader["CNSPercent"]);
 
                                 dive.DataPoints.Add(dataPoint);
                             }

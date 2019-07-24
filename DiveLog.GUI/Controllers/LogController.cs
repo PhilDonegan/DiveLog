@@ -47,7 +47,7 @@ namespace DiveLog.GUI.Controllers
                 // Change this to sample data points for mini graphs
                 foreach (var dp in dive.DataPoints)
                 {
-                    var datapoint = new DataPoint(dp.Time / 10, Convert.ToDouble(dp.Depth));
+                    var datapoint = new DataPoint(dp.Time, Convert.ToDouble(dp.Depth), cns: dp.CNS, averagePPO2: Convert.ToDouble(dp.AveragePPO2));
                     diveProfile.Datapoints.Add(datapoint);
                 }
 

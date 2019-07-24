@@ -18,7 +18,8 @@ namespace DiveLog.API.Profiles
                 .ForMember(x => x.Time, m => m.MapFrom(y => y.Time))
                 .ForMember(x => x.Depth, m => m.MapFrom(y => y.Depth))
                 .ForMember(x => x.AveragePPO2, m => m.MapFrom(y => y.AveragePPO2))
-                .ForMember(x => x.WaterTemp, m => m.MapFrom(y => y.WaterTemp));
+                .ForMember(x => x.WaterTemp, m => m.MapFrom(y => y.WaterTemp))
+                .ForMember(x => x.CNS, m => m.MapFrom(y => y.CNS));
         }
     }
 }

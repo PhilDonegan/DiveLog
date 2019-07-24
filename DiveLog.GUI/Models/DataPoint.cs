@@ -5,11 +5,12 @@ namespace DiveLog.GUI.Models
     [DataContract]
     public class DataPoint
     {
-        public DataPoint(double x, double y, double cns = 0)
+        public DataPoint(double x, double y, double cns = 0, double averagePPO2 = 0)
         {
             this.X = x;
             this.Y = y;
             this.CNS = cns;
+            this.AveragePPO2 = averagePPO2;
         }
 
         [DataMember(Name = "x")]
@@ -19,5 +20,7 @@ namespace DiveLog.GUI.Models
         public double Y { get; private set; }
 
         public double CNS { get; private set; }
+
+        public double AveragePPO2 { get; private set; }
     }
 }

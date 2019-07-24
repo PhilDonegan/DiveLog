@@ -14,5 +14,7 @@ namespace DiveLog.DTO
         public decimal AveragePPO2 { get; set; }
 
         public short WaterTemp { get; set; }
+
+        public short CNS { get; set; }
     }
 }

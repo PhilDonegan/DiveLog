@@ -23,6 +23,6 @@ namespace DiveLog.DAL.Models
 
         public short WaterTemp { get; set; }
 
-
+        public short CNS { get; set; }
     }
 }

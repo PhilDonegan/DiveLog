@@ -1,31 +1,72 @@
 ﻿@model DiveProfile
 
 <div id="@string.Format("chartContainer{0}", Model.Index)" style="width: 40%; height: 300px;display: inline-block;"></div>
+@*<div id="@string.Format("chartContainer{0}", Model.Index)"></div>*@
 
 <script type="text/javascript">
+
+		var cnsData = [];
+		var depthData = [];
+		var ppO2Data = [];
+
+		@foreach(var dp in Model.Datapoints.OrderBy(x => x.X))
+		{
+			@:depthData.push({x: parseFloat("@dp.X"), y: parseFloat("@dp.Y")});
+			@:cnsData.push({ x: parseFloat("@dp.X"), y: parseFloat("@dp.CNS") });
+			@:ppO2Data.push({ x: parseFloat("@dp.X"), y: parseFloat("@dp.AveragePPO2") });
+		}
+
+
+		//for (var i = 0; i < cnsData.length; i++) {
+		//	console.log(cnsData[i]);
+		//}
+
 		var chart = new CanvasJS.Chart("@string.Format("chartContainer{0}", Model.Index)", {
-			animationEnabled: true,
+		animationEnabled: true,
 			axisY: {
-				includeZero: false,
-				prefix: "",
+				//includeZero: false,
+				//prefix: "",
 				reversed: true,
 				title: "Depth (m)"
 			},
+			axisY2: [{
+				title: "CNS %",
+				lineColor: "#C24642",
+				titleFontColor: "#C24642",
+				labelFontColor: "#C24642"
+			},
+				{
+					title: "ppO2",
+					lineColor: "#A6CE39",
+					labelFontColor: "#A6CE39"
+				}],
 			axisX: {
-				title: "Time (min)"
+			title: "Time (min)"
 			},
-			toolTip: {
-				shared: true,
-				content: "<span style='\"'color: {color};'\"'><strong>Depth</strong></span> <span style='\"'color: dimgrey;'\"'>{y}m</span> "
-			},
+			//toolTip: {
+			//shared: true,
+			//	content: "<span style='\"'color: {color};'\"'><strong>Depth</strong></span> <span style='\"'color: dimgrey;'\"'>{y}m</span> "
+			//},
 			legend: {
-				fontSize: 13
+			fontSize: 13
 			},
 			data: [{
 				type: "area",
 				markerSize: 0,
 				color: "rgba(54,158,173,.6)",
-				dataPoints: @Json.Serialize(Model.Datapoints.OrderBy(x => x.X))
+				dataPoints: depthData
+				},
+				{
+					axisYType: "secondary",
+					type: "line",
+					dataPoints: cnsData
+
+				},
+				{
+					axisYIndex: 1,
+					axisYType: "secondary",
+					type: "line",
+					dataPoints: ppO2Data
 				}]
 		});
 
