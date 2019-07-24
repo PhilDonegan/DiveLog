@@ -1,7 +1,7 @@
 ﻿@model DiveProfile
 
-<div id="@string.Format("chartContainer{0}", Model.Index)" style="width: 40%; height: 300px;display: inline-block;"></div>
-@*<div id="@string.Format("chartContainer{0}", Model.Index)"></div>*@
+@*<div id="@string.Format("chartContainer{0}", Model.Index)" style="width: 40%; height: 300px;display: inline-block;"></div>*@
+<div id="@string.Format("chartContainer{0}", Model.Index)" class="col-lg-6 col-md-12 col-sm-12 col-xs-12" style="height: 300px;display: inline-block;"></div>
 
 <script type="text/javascript">
 
@@ -38,6 +38,7 @@
 				{
 					title: "ppO2",
 					lineColor: "#A6CE39",
+					titleFontColor: "#A6CE39",
 					labelFontColor: "#A6CE39"
 				}],
 			axisX: {
