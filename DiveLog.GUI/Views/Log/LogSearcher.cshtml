@@ -3,34 +3,34 @@
 	ViewData["Title"] = "Dive Log Searcher";
 }
 
-<div class="container">
-	<form asp-action="LogSearcherResults">
-		<div class="form-group">
-			<label asp-for="DiveType" class="control-label">Dive Type:</label>
-			<select asp-for="DiveType" asp-items="Html.GetEnumSelectList<DiveLog.DTO.Types.DiveType>()">
-				<option selected="selected" value="">Any</option>
-			</select>
-		</div>
-		<div class="form-group">
-			<label asp-for="TargetDepth">Target Depth (m):</label>
-			<input asp-for="TargetDepth" />
-			<label asp-for="TargetDepthRange">Target Depth Range +/- (m): </label>
-			<input asp-for="TargetDepthRange" value="10" />
-		</div>
-		<div class="form-group">
-			<label asp-for="TargetDiveTime">Target Dive Time (min):</label>
-			<input asp-for="TargetDiveTime" />
-			<label asp-for="TargetDiveTimeRange">Target Dive Time Range +/- (min)</label>
-			<input asp-for="TargetDiveTimeRange" value="25"/>
-		</div>
+	<div class="container">
+		<h3>Search Logs</h3>
+		<form asp-action="LogSearcherResults">
+			<div class="form-group">
+				<label asp-for="DiveType" class="control-label">Dive Type:</label>
+				<select asp-for="DiveType" asp-items="Html.GetEnumSelectList<DiveLog.DTO.Types.DiveType>()">
+					<option selected="selected" value="">Any</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<label asp-for="TargetDepth">Target Depth (m):</label>
+				<input asp-for="TargetDepth" />
+				<label asp-for="TargetDepthRange">Target Depth Range +/- (m): </label>
+				<input asp-for="TargetDepthRange" value="10" />
+			</div>
+			<div class="form-group">
+				<label asp-for="TargetDiveTime">Target Dive Time (min):</label>
+				<input asp-for="TargetDiveTime" />
+				<label asp-for="TargetDiveTimeRange">Target Dive Time Range +/- (min)</label>
+				<input asp-for="TargetDiveTimeRange" value="25" />
+			</div>
 
-		<input type="submit" value="Search" class="btn btn-primary"/>
-	</form>
-</div>
+			<input type="submit" value="Search" class="btn btn-primary" />
+		</form>
+	</div>
 
-<h3>Dive Logs</h3>
+
 <div id="chartContainer"></div>
-
 
 @section Scripts {
 	<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
