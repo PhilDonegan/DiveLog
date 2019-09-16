@@ -20,6 +20,6 @@ OSTC parser
 ## Phase 6
 Dive planner based on statistical comparison
 
-API currently deployed to here: https://divelogapi20190611082926.azurewebsites.net swagger doc at https://divelogapi20190611082926.azurewebsites.net/swagger
+API currently deployed to here: https://api.decostats.com/ swagger doc at https://api.decostats.com/swagger/index.html
 
-GUI currently deployed to here: https://diveloggui20190720041230.azurewebsites.net/
+GUI currently deployed to here: https://www.decostats.com/
