@@ -11,9 +11,9 @@
 
 		@foreach(var dp in Model.Datapoints.OrderBy(x => x.X))
 		{
-			@:depthData.push({x: parseFloat("@dp.X"), y: parseFloat("@dp.Y")});
-			@:cnsData.push({ x: parseFloat("@dp.X"), y: parseFloat("@dp.CNS") });
-			@:ppO2Data.push({ x: parseFloat("@dp.X"), y: parseFloat("@dp.AveragePPO2") });
+			@:depthData.push({x: parseFloat("@dp.TimeMin"), y: parseFloat("@dp.Y")});
+			@:cnsData.push({ x: parseFloat("@dp.TimeMin"), y: parseFloat("@dp.CNS") });
+			@:ppO2Data.push({ x: parseFloat("@dp.TimeMin"), y: parseFloat("@dp.AveragePPO2") });
 		}
 
 
@@ -44,30 +44,34 @@
 			axisX: {
 			title: "Time (min)"
 			},
-			//toolTip: {
-			//shared: true,
-			//	content: "<span style='\"'color: {color};'\"'><strong>Depth</strong></span> <span style='\"'color: dimgrey;'\"'>{y}m</span> "
-			//},
+			toolTip: {
+				shared: true,
+			},
 			legend: {
 			fontSize: 13
 			},
 			data: [{
-				type: "area",
-				markerSize: 0,
-				color: "rgba(54,158,173,.6)",
-				dataPoints: depthData
+					type: "area",
+					markerSize: 0,
+					color: "rgba(54,158,173,.6)",
+					dataPoints: depthData,
+					name: "Depth (m)",
+					toolTipContent: "<span style='\"'color: {color};'\"'>{name}</span>, <strong>{y}</strong>"
 				},
 				{
 					axisYType: "secondary",
 					type: "line",
-					dataPoints: cnsData
-
+					dataPoints: cnsData,
+					name: "CNS %",
+					toolTipContent: "<span style='\"'color: {color};'\"'>{name}</span>, <strong>{y}</strong>"
 				},
 				{
 					axisYIndex: 1,
 					axisYType: "secondary",
 					type: "line",
-					dataPoints: ppO2Data
+					dataPoints: ppO2Data,
+					name: "pp02",
+					toolTipContent: "<span style='\"'color: {color};'\"'>{name}</span>, <strong>{y}</strong>"
 				}]
 		});
 

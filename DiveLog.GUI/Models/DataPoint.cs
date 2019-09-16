@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System;
+using System.Runtime.Serialization;
 
 namespace DiveLog.GUI.Models
 {
@@ -22,5 +23,7 @@ namespace DiveLog.GUI.Models
         public double CNS { get; private set; }
 
         public double AveragePPO2 { get; private set; }
+
+        public double TimeMin => X / 60;
     }
 }
