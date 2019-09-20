@@ -11,7 +11,7 @@ Shearwater parser
 ## Phase 3 (Done)
 GUI to review dive profiles.
 
-## Phase 4
+## Phase 4 (Done)
 More data, more parsing, more everything.
 
 ## Phase 5 
