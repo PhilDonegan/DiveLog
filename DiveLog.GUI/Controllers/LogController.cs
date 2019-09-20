@@ -43,6 +43,7 @@ namespace DiveLog.GUI.Controllers
             {
                 var diveProfile = new DiveProfile();
                 diveProfile.Index = dives.FindIndex(d => d.Equals(dive));
+                diveProfile.DiveDate = dive.DiveDate;
 
                 // Change this to sample data points for mini graphs
                 foreach (var dp in dive.DataPoints)

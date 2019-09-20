@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -49,7 +50,7 @@
         @RenderBody()
         <hr />
         <footer>
-			<p>&copy; 2019 - DecoStats</p>
+			<p>&copy; @DateTime.Now.Year - DecoStats - Total dives in database: @await Component.InvokeAsync("TotalDivesComponent")</p>
         </footer>
     </div>
 

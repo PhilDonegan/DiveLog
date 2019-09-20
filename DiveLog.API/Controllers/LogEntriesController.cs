@@ -68,7 +68,7 @@ namespace DiveLog.API.Controllers
                 clause = clause.Where(x => x.DiveType.Equals(query.DiveType));
             }
 
-            var results = await clause.ToListAsync();
+            var results = await clause.OrderByDescending(x => x.DiveDate).ToListAsync();
             if (results == null)
             {
                 return NotFound();

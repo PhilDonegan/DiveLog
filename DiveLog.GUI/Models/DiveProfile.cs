@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace DiveLog.GUI.Models
 {
@@ -10,6 +11,8 @@ namespace DiveLog.GUI.Models
         }
 
         public int Index { get; set; }
+
+        public DateTime DiveDate { get; set; }
 
         public List<DataPoint> Datapoints { get; set; }
     }

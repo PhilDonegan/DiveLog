@@ -5,11 +5,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using DiveLog.GUI.Models;
+using DiveLog.GUI.Helpers;
+using Microsoft.AspNetCore.Http;
 
 namespace DiveLog.GUI.Controllers
 {
     public class HomeController : Controller
     {
+		public HomeController()
+		{
+		}
+
         public IActionResult Index()
         {
             return View();

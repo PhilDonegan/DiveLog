@@ -1,8 +1,11 @@
 ﻿@model DiveProfile
 
 @*<div id="@string.Format("chartContainer{0}", Model.Index)" style="width: 40%; height: 300px;display: inline-block;"></div>*@
-<div id="@string.Format("chartContainer{0}", Model.Index)" class="col-lg-6 col-md-12 col-sm-12 col-xs-12" style="height: 300px;display: inline-block;"></div>
-
+	<div class="col-lg-6 col-md-12 col-sm-12 col-xs-12" >
+		<p class="text-center">@Model.DiveDate</p>
+		<div id="@string.Format("chartContainer{0}", Model.Index)" style="height: 300px;display: inline-block;">
+		</div>
+	</div>
 <script type="text/javascript">
 
 		var cnsData = [];
@@ -22,10 +25,8 @@
 		//}
 
 		var chart = new CanvasJS.Chart("@string.Format("chartContainer{0}", Model.Index)", {
-		animationEnabled: true,
+			animationEnabled: true,
 			axisY: {
-				//includeZero: false,
-				//prefix: "",
 				reversed: true,
 				title: "Depth (m)"
 			},
@@ -35,20 +36,20 @@
 				titleFontColor: "#C24642",
 				labelFontColor: "#C24642"
 			},
-				{
-					title: "ppO2",
-					lineColor: "#A6CE39",
-					titleFontColor: "#A6CE39",
-					labelFontColor: "#A6CE39"
-				}],
+			{
+				title: "ppO2",
+				lineColor: "#A6CE39",
+				titleFontColor: "#A6CE39",
+				labelFontColor: "#A6CE39"
+			}],
 			axisX: {
-			title: "Time (min)"
+				title: "Time (min)"
 			},
 			toolTip: {
 				shared: true,
 			},
 			legend: {
-			fontSize: 13
+				fontSize: 13
 			},
 			data: [{
 					type: "area",

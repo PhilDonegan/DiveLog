@@ -52,7 +52,8 @@ namespace DiveLog.Parsers
             try
             {
                 sqliteConnection.Open();
-                string sql = "SELECT id, CAST(startDate as nvarchar(10)) as stringStartDate, maxTime, maxDepth FROM dive_logs";
+                //string sql = "SELECT id, CAST(startDate as nvarchar(20)) as stringStartDate, maxTime, maxDepth FROM dive_logs";
+                string sql = "SELECT id, datetime(startTimeStamp,'unixepoch') as stringStartDate, maxTime, maxDepth FROM dive_logs";
                 using (var command = new SQLiteCommand(sql, sqliteConnection))
                 {
                     using (var reader = command.ExecuteReader())
@@ -61,7 +62,10 @@ namespace DiveLog.Parsers
                         { 
                             var dive = new LogEntryDTO();
                             dive.ExternalId = reader["id"].ToString();
-                            dive.DiveDate = DateTime.FromOADate(Convert.ToDouble(reader["stringStartDate"]));
+
+                            var date = reader["stringStartDate"];
+
+                            dive.DiveDate = DateTime.Parse(date.ToString());
                             dive.MaxDepth = Convert.ToDecimal(reader["maxDepth"]);
                             dive.DiveLength = TimeSpan.FromMinutes(Convert.ToInt32(reader["maxTime"]));
                             dive.DiveType = DTO.Types.DiveType.CCR;
