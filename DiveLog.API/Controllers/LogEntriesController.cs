@@ -31,20 +31,6 @@ namespace DiveLog.API.Controllers
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));        }
 
-        // GET api/values
-        ////[HttpGet]
-        ////public async Task<ActionResult<List<LogEntryDTO>>> Get()
-        ////{
-        ////    var results = await _context.LogEntries.Include(x => x.DataPoints).ToListAsync();
-        ////    if (results == null)
-        ////    {
-        ////        return NotFound();
-        ////    }
-
-        ////    var dtos = _mapper.Map<List<LogEntry>, List<LogEntryDTO>>(results);
-        ////    return dtos;
-        ////}
-
         [Route("[action]")]
         [HttpGet]
         public async Task<ActionResult<List<LogEntryDTO>>> SearchDives([FromQuery]SearchDivesQuery query)
@@ -58,14 +44,14 @@ namespace DiveLog.API.Controllers
 
             clause = clause.Where(x => x.MaxDepth >= lowDepth && x.MaxDepth < highDepth);
 
-            var lowTime = query.TargetDiveLength - query.TargetDiveLengthRange > TimeSpan.Zero ? query.TargetDiveLength - query.TargetDiveLengthRange : TimeSpan.Zero;
-            var highTime = query.TargetDiveLength + query.TargetDiveLengthRange;
+            var lowTime = TimeSpan.FromMinutes(query.TargetDiveLength) - TimeSpan.FromMinutes(query.TargetDiveLengthRange) > TimeSpan.Zero ? TimeSpan.FromMinutes(query.TargetDiveLength) - TimeSpan.FromMinutes(query.TargetDiveLengthRange) : TimeSpan.Zero;
+            var highTime = TimeSpan.FromMinutes(query.TargetDiveLength) + TimeSpan.FromMinutes(query.TargetDiveLengthRange);
 
             clause = clause.Where(x => x.DiveLength >= lowTime && x.DiveLength < highTime);
 
             if (query.DiveType.HasValue)
             {
-                clause = clause.Where(x => x.DiveType.Equals(query.DiveType));
+                clause = clause.Where(x => (int)x.DiveType == (int)query.DiveType.Value);
             }
 
             var results = await clause.OrderByDescending(x => x.DiveDate).ToListAsync();
@@ -81,11 +67,14 @@ namespace DiveLog.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<LogEntryDTO>> Get(long id)
         {
-            var result = await _context.LogEntries.FindAsync(id);
+			var result = await _context.LogEntries.Include(x => x.DataPoints).SingleAsync(x => x.Id == id);
             if (result == null)
             {
                 return NotFound();
             }
+
+			var ordereredDataPoints = result.DataPoints.OrderBy(x => x.Time);
+			result.DataPoints = ordereredDataPoints.ToList();
 
             return _mapper.Map<LogEntry, LogEntryDTO>(result);
         }

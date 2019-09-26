@@ -71,7 +71,7 @@ namespace DiveLog.GUI.Helpers
             }
         }
 
-        public async Task<List<LogEntryDTO>> SearchDives(DiveType? diveType, decimal targetDepth, short targetDepthRange, TimeSpan TargetDiveLength, TimeSpan TargetDiveLengthRange)
+        public async Task<List<LogEntryDTO>> SearchDives(DiveType? diveType, decimal targetDepth, short targetDepthRange, double TargetDiveLength, double TargetDiveLengthRange)
         {
             var queryParams = new Dictionary<string, string>();
 

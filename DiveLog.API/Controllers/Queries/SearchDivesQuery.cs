@@ -19,9 +19,9 @@ namespace DiveLog.API.Controllers.Queries
         public short TargetDepthRange { get; set; }
 
         [FromQuery]
-        public TimeSpan TargetDiveLength { get; set; }
+        public short TargetDiveLength { get; set; }
 
         [FromQuery]
-        public TimeSpan TargetDiveLengthRange { get; set; }
+        public short TargetDiveLengthRange { get; set; }
     }
 }

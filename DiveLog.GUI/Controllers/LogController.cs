@@ -30,8 +30,8 @@ namespace DiveLog.GUI.Controllers
                 model.DiveType, 
                 model.TargetDepth, 
                 model.TargetDepthRange, 
-                TimeSpan.FromMinutes(model.TargetDiveTime), 
-                TimeSpan.FromMinutes(model.TargetDiveTimeRange));
+                model.TargetDiveTime, 
+                model.TargetDiveTimeRange);
 
             if (!ModelState.IsValid)
             {

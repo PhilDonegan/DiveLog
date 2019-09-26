@@ -1,4 +1,4 @@
-﻿@model  ShearwaterUploadModel
+﻿@model ShearwaterUploadModel
 @{
 	ViewData["Title"] = "Shearwater Upload";
 }
@@ -14,5 +14,34 @@
 <p>Please note large dive databases may take a while to process > 5 minutes, please be patient.</p>
 
 @{
-	await Html.RenderPartialAsync("_FileUploader");
+	await Html.RenderPartialAsync("_FileUploaderV2");
+}
+@section Scripts {
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.1/jquery.form.js">
+	</script>
+
+	<script>
+		$(function () {
+			var options = {
+				success: function (data) {
+					$("#responseText").html("Ok");
+				},
+				xhr: function () {
+					// get the native XmlHttpRequest object
+					var xhr = $.ajaxSettings.xhr();
+
+					//set the onprogress event handler
+					xhr.upload.onprogress = function (evt) {
+						console.log('progress', evt.loaded / evt.total * 100)
+						$("#upload-progress-bar").css("width", evt.loaded / evt.total * 100 + "%").text(evt.loaded / evt.total * 100 + "%");
+					};
+					// set the onload event handler
+					xhr.upload.onload = function () { console.log('DONE!') };
+					// return the customized object
+					return xhr;
+				}
+			};
+			$("#form1").ajaxForm(options);
+		})
+	</script>
 }
