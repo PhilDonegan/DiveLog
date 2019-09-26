@@ -37,9 +37,10 @@ namespace DiveLog.API.Controllers
         {
             _ = query ?? throw new ArgumentNullException(nameof(query));
 
-            var clause = _context.LogEntries.Include(x => x.DataPoints).AsQueryable();
+            //var clause = _context.LogEntries.Include(x => x.DataPoints).AsQueryable();
+			var clause = _context.LogEntries.AsQueryable();
 
-            var lowDepth = query.TargetDepth - query.TargetDepthRange > 0 ? query.TargetDepth - query.TargetDepthRange : 0;
+			var lowDepth = query.TargetDepth - query.TargetDepthRange > 0 ? query.TargetDepth - query.TargetDepthRange : 0;
             var highDepth = query.TargetDepth + query.TargetDepthRange;
 
             clause = clause.Where(x => x.MaxDepth >= lowDepth && x.MaxDepth < highDepth);
@@ -60,6 +61,8 @@ namespace DiveLog.API.Controllers
                 return NotFound();
             }
 
+			results.ForEach(x => _context.Entry(x).Collection(y => y.DataPoints).Query().OrderBy(z => z.Time).Load());
+
             var dtos = _mapper.Map<List<LogEntry>, List<LogEntryDTO>>(results);
             return dtos;
         }
@@ -67,14 +70,13 @@ namespace DiveLog.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<LogEntryDTO>> Get(long id)
         {
-			var result = await _context.LogEntries.Include(x => x.DataPoints).SingleAsync(x => x.Id == id);
+			var result = await _context.LogEntries.FindAsync(id);
             if (result == null)
             {
                 return NotFound();
             }
 
-			var ordereredDataPoints = result.DataPoints.OrderBy(x => x.Time);
-			result.DataPoints = ordereredDataPoints.ToList();
+			_context.Entry(result).Collection(x => x.DataPoints).Query().OrderBy(y => y.Time).Load();
 
             return _mapper.Map<LogEntry, LogEntryDTO>(result);
         }
