@@ -15,12 +15,17 @@ using System.Data.SQLite;
 using Microsoft.AspNetCore.Http;
 using System.Globalization;
 using DiveLog.Parser.Extension;
+using DiveLog.Parser.Progress;
 
 namespace DiveLog.Parsers
 {
     public class Shearwater : IParser
     {
         private IConfiguration _builder;
+		private int _totalDives;
+
+		public delegate void ParserProgressEventArgs(ParserProgess parserProgess);
+		public event ParserProgressEventArgs DiveParsed;
 
         public Shearwater(IConfiguration builder)
         {
@@ -43,7 +48,14 @@ namespace DiveLog.Parsers
 
         private void DeleteUpload(string path)
         {
-            File.Delete(path);
+			try
+			{
+				File.Delete(path);
+			}
+			catch (IOException ex)
+			{
+				System.Diagnostics.Debug.Fail(ex.Message, ex.GetBaseException().Message);
+			}
         }
 
         private List<LogEntryDTO> ExtractDives(SQLiteConnection sqliteConnection)
@@ -52,8 +64,17 @@ namespace DiveLog.Parsers
             try
             {
                 sqliteConnection.Open();
-                //string sql = "SELECT id, CAST(startDate as nvarchar(20)) as stringStartDate, maxTime, maxDepth FROM dive_logs";
-                string sql = "SELECT id, datetime(startTimeStamp,'unixepoch') as stringStartDate, maxTime, maxDepth FROM dive_logs";
+
+				if (DiveParsed != null)
+				{
+					string countSql = "SELECT COUNT(id) FROM dive_logs";
+					var countCommand = new SQLiteCommand(countSql, sqliteConnection);
+					_totalDives = int.Parse(countCommand.ExecuteScalar().ToString());
+
+					DiveParsed(new ParserProgess(0, _totalDives));
+				}
+
+                var sql = "SELECT id, datetime(startTimeStamp,'unixepoch') as stringStartDate, maxTime, maxDepth FROM dive_logs";
                 using (var command = new SQLiteCommand(sql, sqliteConnection))
                 {
                     using (var reader = command.ExecuteReader())
@@ -73,7 +94,7 @@ namespace DiveLog.Parsers
 
                             dive.DataPoints = new List<DataPointDTO>();
                             dives.Add(dive);
-                        } 
+						} 
                     }
                 }
 
@@ -100,10 +121,12 @@ namespace DiveLog.Parsers
                                 dataPoint.CNS = Convert.ToInt16(reader["CNSPercent"]);
 
                                 dive.DataPoints.Add(dataPoint);
-                            }
+							}
                         }
                     }
-                }
+
+					DiveParsed?.Invoke(new ParserProgess(dives.IndexOf(dive) + 1, _totalDives));
+				}
             }
             catch (Exception ex)
             {

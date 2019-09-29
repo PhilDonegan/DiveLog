@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using DiveLog.GUI.Helpers;
+using DiveLog.GUI.Hubs;
 using DiveLog.Parser.Types;
 using DiveLog.Parsers;
 using Microsoft.AspNetCore.Builder;
@@ -32,6 +33,8 @@ namespace DiveLog.GUI
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
+
+			services.AddSignalR();
 
             services.AddSingleton<IFileProvider>(
                 new PhysicalFileProvider(
@@ -69,6 +72,8 @@ namespace DiveLog.GUI
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
+
+			app.UseSignalR(routes => { routes.MapHub<DiveParseProgressHub>("/jobprogress"); });
 
             app.UseMvc(routes =>
             {

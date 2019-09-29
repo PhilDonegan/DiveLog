@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
+using DiveLog.API.Hangfire;
 using DiveLog.API.Helpers;
 using DiveLog.DAL;
+using Hangfire;
+using Hangfire.Dashboard;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
+using System.Collections.Generic;
 
 namespace DiveLog.API
 {
@@ -30,7 +34,8 @@ namespace DiveLog.API
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-
+			var hangfireDB = Configuration.GetConnectionString("HangfireDB");
+			services.AddHangfire(x => x.UseSqlServerStorage(hangfireDB));
             services.AddMemoryCache();
 
             services.AddSession(options =>
@@ -66,6 +71,13 @@ namespace DiveLog.API
             }
 
             app.UseHttpsRedirection();
+
+			app.UseHangfireServer();
+			var options = new DashboardOptions
+			{
+				Authorization = new[] { new DivelogHangfireAuthorizationFilter() }
+			};
+			app.UseHangfireDashboard("/hangfire", options);
 
             app.UseSwagger(setupAction: null);
             app.UseSwaggerUI(c =>

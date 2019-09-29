@@ -9,6 +9,8 @@ namespace DiveLog.Parsers
 {
     public interface IParser
     {
-        Task<List<LogEntryDTO>> ProcessDivesAsync(IFormFile data);
+		event Shearwater.ParserProgressEventArgs DiveParsed;
+
+		Task<List<LogEntryDTO>> ProcessDivesAsync(IFormFile data);
     }
 }
