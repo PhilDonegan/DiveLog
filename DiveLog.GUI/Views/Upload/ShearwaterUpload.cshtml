@@ -29,11 +29,12 @@
 				xhr: function () {
 					// get the native XmlHttpRequest object
 					var xhr = $.ajaxSettings.xhr();
-
+					var value1 = 0;
 					//set the onprogress event handler
 					xhr.upload.onprogress = function (evt) {
-						console.log('progress', evt.loaded / evt.total * 100)
-						$("#upload-progress-bar").css("width", evt.loaded / evt.total * 100 + "%").text(evt.loaded / evt.total * 100 + "%");
+						value1 = evt.loaded / evt.total * 100;
+						console.log('progress', value1)
+						$(".progress-bar").css("width", value1 + "%").text(value1 + "%");
 					};
 					// set the onload event handler
 					xhr.upload.onload = function () { console.log('DONE!') };
