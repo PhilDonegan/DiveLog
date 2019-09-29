@@ -14,15 +14,15 @@
 			</div>
 			<div class="form-group">
 				<label asp-for="TargetDepth">Target Depth (m):</label>
-				<input asp-for="TargetDepth" />
+				<input type="number" asp-for="TargetDepth" />
 				<label asp-for="TargetDepthRange">Target Depth Range +/- (m): </label>
-				<input asp-for="TargetDepthRange" value="10" />
+				<input type="number" asp-for="TargetDepthRange" value="10" />
 			</div>
 			<div class="form-group">
 				<label asp-for="TargetDiveTime">Target Dive Time (min):</label>
-				<input asp-for="TargetDiveTime" />
+				<input type="number" asp-for="TargetDiveTime" />
 				<label asp-for="TargetDiveTimeRange">Target Dive Time Range +/- (min)</label>
-				<input asp-for="TargetDiveTimeRange" value="25" />
+				<input type="number" asp-for="TargetDiveTimeRange" value="25" />
 			</div>
 
 			<input type="submit" value="Search" class="btn btn-primary" />
