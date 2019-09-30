@@ -11,6 +11,6 @@ namespace DiveLog.Parsers
     {
 		event Shearwater.ParserProgressEventArgs DiveParsed;
 
-		Task<List<LogEntryDTO>> ProcessDivesAsync(IFormFile data);
+		Task<List<LogEntryDTO>> ProcessDivesAsync(string id, string path);
     }
 }

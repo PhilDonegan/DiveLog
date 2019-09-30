@@ -18,11 +18,12 @@ namespace DiveLog.GUI.Controllers
 {
     public class UploadController : Controller
     {
-		private string _id = Guid.NewGuid().ToString("N");
 		private IConfiguration _config;
         private APIHelper _apiHelper;
 		private readonly IHubContext<DiveParseProgressHub> _hubContext;
 		private readonly ILogger<UploadController> _logger;
+		private readonly IFileHelper _fileHelper;
+		private readonly IFileUploadManager _fileUploadManager;
 		private IParser _parser;
 
         public UploadController(
@@ -30,22 +31,26 @@ namespace DiveLog.GUI.Controllers
             Func<SupportedParsers, IParser> parserService,
             APIHelper apiHelper,
 			IHubContext<DiveParseProgressHub> hubContext,
-			ILogger<UploadController> logger)
+			ILogger<UploadController> logger,
+			IFileHelper fileHelper,
+			IFileUploadManager fileUploadManager)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
             _apiHelper = apiHelper ?? throw new ArgumentNullException(nameof(apiHelper));
 			_hubContext = hubContext ?? throw new ArgumentNullException(nameof(hubContext));
 			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
+			_fileHelper = fileHelper ?? throw new ArgumentNullException(nameof(fileHelper));
+			_fileUploadManager = fileUploadManager ?? throw new ArgumentNullException(nameof(fileUploadManager));
 			_parser = parserService(SupportedParsers.Shearwater);
 			_parser.DiveParsed += DiveParserProgressChanged;
         }
 
-		private async void DiveParserProgressChanged(ParserProgess parserProgess)
+		private async void DiveParserProgressChanged(string Id, ParserProgess parserProgess)
 		{
 			if (parserProgess != null)
 			{
 				_logger.LogInformation($"Dive {parserProgess.CurrentDive} processed of {parserProgess.TotalDives}");
-				await _hubContext.Clients.Group(_id).SendAsync("progress", parserProgess);
+				await _hubContext.Clients.Group(Id).SendAsync("progress", parserProgess);
 			}
 		}
 
@@ -55,7 +60,7 @@ namespace DiveLog.GUI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Upload([FromForm(Name ="file")] IFormFile data)
+        public async Task<ActionResult<string>> Upload([FromForm(Name ="file")] IFormFile data)
         {
             if (!ModelState.IsValid)
             {
@@ -67,17 +72,24 @@ namespace DiveLog.GUI.Controllers
                 throw new ArgumentNullException(nameof(data));
             }
 
-            var dives = await _parser.ProcessDivesAsync(data);
-            var result = await _apiHelper.UploadDivesToAPI(dives);
+			var path = await _fileHelper.AddDataToStorage(data);
+			var id = Guid.NewGuid().ToString("N");
+			_fileUploadManager.Add(id, path);
 
-            // Return dives to UI and gather results
-
-            return RedirectToAction("Index");
+			// Return job id to 
+			return Json(id);
+			////return RedirectToAction("Index");
         }
 
-		//[HttpPost]
-		//public async Task<IActionResult> Process(string fileIdentifier)
+		[HttpPost]
+		public async Task<IActionResult> Process(string id)
+		{
+			var path = _fileUploadManager.Get(id);
+			var dives = await _parser.ProcessDivesAsync(id, path);
+			var result = await _apiHelper.UploadDivesToAPI(dives);
 
-        
-    }
+			_fileHelper.DeleteUpload(path);
+			return RedirectToAction("Index");
+		}
+	}
 }

@@ -41,6 +41,8 @@ namespace DiveLog.GUI
                     Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")));
             services.AddTransient<APIHelper>();
             services.AddScoped<Shearwater>();
+			services.AddTransient<IFileHelper, FileHelper>();
+			services.AddSingleton<IFileUploadManager, FileUploadManager>();
 
             services.AddScoped<Func<SupportedParsers, IParser>>(selector => key =>
             {

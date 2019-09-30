@@ -24,7 +24,7 @@ namespace DiveLog.Parsers
         private IConfiguration _builder;
 		private int _totalDives;
 
-		public delegate void ParserProgressEventArgs(ParserProgess parserProgess);
+		public delegate void ParserProgressEventArgs(string id, ParserProgess parserProgess);
 		public event ParserProgressEventArgs DiveParsed;
 
         public Shearwater(IConfiguration builder)
@@ -32,33 +32,20 @@ namespace DiveLog.Parsers
             _builder = builder ?? throw new ArgumentNullException(nameof(builder));
         }
 
-        public async Task<List<LogEntryDTO>> ProcessDivesAsync(IFormFile data)
+        public async Task<List<LogEntryDTO>> ProcessDivesAsync(string id, string path)
         {
-            if (data == null)
+            if (path == null)
             {
-                throw new ArgumentNullException(nameof(data));
+                throw new ArgumentNullException(nameof(path));
             }
 
-            var path = await AddDataToStorage(data);
             var sqliteConnection = CreateSqliteConnection(path);
-            var dives = ExtractDives(sqliteConnection);
-            DeleteUpload(path);
-            return dives;
+            var dives = ExtractDives(id, sqliteConnection);
+
+			return dives;
         }
 
-        private void DeleteUpload(string path)
-        {
-			try
-			{
-				File.Delete(path);
-			}
-			catch (IOException ex)
-			{
-				System.Diagnostics.Debug.Fail(ex.Message, ex.GetBaseException().Message);
-			}
-        }
-
-        private List<LogEntryDTO> ExtractDives(SQLiteConnection sqliteConnection)
+        private List<LogEntryDTO> ExtractDives(string id, SQLiteConnection sqliteConnection)
         {
             List<LogEntryDTO> dives = new List<LogEntryDTO>();
             try
@@ -71,7 +58,7 @@ namespace DiveLog.Parsers
 					var countCommand = new SQLiteCommand(countSql, sqliteConnection);
 					_totalDives = int.Parse(countCommand.ExecuteScalar().ToString());
 
-					DiveParsed(new ParserProgess(0, _totalDives));
+					DiveParsed(id, new ParserProgess(0, _totalDives));
 				}
 
                 var sql = "SELECT id, datetime(startTimeStamp,'unixepoch') as stringStartDate, maxTime, maxDepth FROM dive_logs";
@@ -125,7 +112,7 @@ namespace DiveLog.Parsers
                         }
                     }
 
-					DiveParsed?.Invoke(new ParserProgess(dives.IndexOf(dive) + 1, _totalDives));
+					DiveParsed?.Invoke(id, new ParserProgess(dives.IndexOf(dive) + 1, _totalDives));
 				}
             }
             catch (Exception ex)
@@ -143,66 +130,6 @@ namespace DiveLog.Parsers
         private SQLiteConnection CreateSqliteConnection(string path)
         {
             return new SQLiteConnection($"Data Source={path};datetimeformat={CultureInfo.CurrentCulture}");
-        }
-
-        private async Task<string> AddDataToStorage(IFormFile data)
-        {
-            var uniqueId = $"{Guid.NewGuid().ToString()}.db";
-
-            if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads")))
-            {
-                Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads"));
-            }
-
-            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", uniqueId);
-            var storeUpload = bool.TryParse(_builder.GetSection("StoreUploads").Value, out _);
-
-            using (var stream = new FileStream(path, FileMode.Create))
-            {
-                await data.CopyToAsync(stream);
-                if (storeUpload)
-                {
-                    var debugUploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "debug");
-                    if (!Directory.Exists(debugUploadPath))
-                    {
-                        Directory.CreateDirectory(debugUploadPath);
-                    }
-
-                    File.Copy(path, Path.Combine(debugUploadPath, uniqueId));                    
-                }
-            }
-
-            return path;
-        }
-
-        private async Task<string> AddDataToAzureStorage(object data)
-        {
-            var uniqueId = $"{Guid.NewGuid().ToString()}.db";
-
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(_builder.GetConnectionString("DiveLogShearwaterAzureBlobStorage"));
-            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
-            CloudBlobContainer blobContainer = blobClient.GetContainerReference("shearwater-blob-container");
-
-            if (await blobContainer.CreateIfNotExistsAsync())
-            {
-                await blobContainer.SetPermissionsAsync(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
-            }
-
-            CloudBlockBlob blob = blobContainer.GetBlockBlobReference(uniqueId);
-            var byteArray = ObjectToByteArray(data);
-            await blob.UploadFromByteArrayAsync(byteArray, 0, byteArray.Count<byte>());
-
-            return uniqueId;
-        }
-
-        private static byte[] ObjectToByteArray(object obj)
-        {
-            var bf = new BinaryFormatter();
-            using (var ms = new MemoryStream())
-            {
-                bf.Serialize(ms, obj);
-                return ms.ToArray();
-            }
         }
     }
 }
