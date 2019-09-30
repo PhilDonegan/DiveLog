@@ -17,15 +17,38 @@
 	await Html.RenderPartialAsync("_FileUploaderV2");
 }
 @section Scripts {
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.1/jquery.form.js">
-	</script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.1/jquery.form.js"></script>
+	<script src="~/lib/signalr/signalr.min.js"></script>
 
 	<script>
 		$(function () {
 			var options = {
-				success: function (data) {
-					console.log('Response=' + data);
-					$("#responseText").html("Ok");
+				success: function (id) {
+					console.log('Response=' + id);
+					var connection = new signalR.HubConnectionBuilder()
+						.withUrl("/jobprogress")
+						.configureLogging(signalR.LogLevel.Information)
+						.build();
+
+					connection.on("progress",
+						(parserProgress) => {
+							console.log('Dive:' + parserProgress.CurrentDive + 'of ' + parserProgress.TotalDives);
+						});
+					connection.start()
+					.then(_ => connection.invoke("AssociateJob", id))
+					.catch(err => console.error(err.toString()));
+
+					$.ajax({
+						type: "POST",
+						contentType: "application/json; charset=utf-8",
+						url: "./Process",
+						data: JSON.stringify(id),
+						success: function (response) {
+							console.log('Called PROCESS OK');
+						}
+					});
+
+					//$("#responseText").html("Ok");
 				},
 				xhr: function () {
 					// get the native XmlHttpRequest object
