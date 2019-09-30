@@ -60,7 +60,7 @@ namespace DiveLog.GUI.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<string>> Upload([FromForm(Name ="file")] IFormFile data)
+        public async Task<IActionResult> Upload([FromForm(Name ="file")] IFormFile data)
         {
             if (!ModelState.IsValid)
             {

@@ -24,6 +24,7 @@
 		$(function () {
 			var options = {
 				success: function (data) {
+					console.log('Response=' + data);
 					$("#responseText").html("Ok");
 				},
 				xhr: function () {

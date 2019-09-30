@@ -1,0 +1,23 @@
+{
+  "name": "DiveLog",
+  "version": "1.0.0",
+  "description": "A project to allow divers to upload their dives to a public database anonymously and crucially record the dive outcomes.  The project will be split into multiple phases",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PhilDonegan/DiveLog.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PhilDonegan/DiveLog/issues"
+  },
+  "homepage": "https://github.com/PhilDonegan/DiveLog#readme",
+  "dependencies": {
+    "@aspnet/signalr": "^1.1.4"
+  }
+}
