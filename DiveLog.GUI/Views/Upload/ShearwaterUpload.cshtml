@@ -18,7 +18,7 @@
 }
 @section Scripts {
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.1/jquery.form.js"></script>
-	<script src="~/lib/signalr/signalr.min.js"></script>
+	<script src="~/lib/signalr/signalr.js"></script>
 
 	<script>
 		$(function () {
@@ -30,25 +30,29 @@
 						.configureLogging(signalR.LogLevel.Information)
 						.build();
 
+					var value2 = 0;
 					connection.on("progress",
 						(parserProgress) => {
-							console.log('Dive:' + parserProgress.CurrentDive + 'of ' + parserProgress.TotalDives);
+							console.log('Client: Dive:' + parserProgress.currentDive + 'of ' + parserProgress.totalDives);
+							value2 = parserProgress.currentDive / parserProgress.totalDives * 100;
+							$("#fileProcess").css("width", value2 + "%").text(parserProgress.currentDive + " of " + parserProgress.totalDives);
 						});
 					connection.start()
 					.then(_ => connection.invoke("AssociateJob", id))
 					.catch(err => console.error(err.toString()));
 
+					console.log("Calling Process with id:" + id)
 					$.ajax({
 						type: "POST",
-						contentType: "application/json; charset=utf-8",
-						url: "./Process",
-						data: JSON.stringify(id),
+						contentType: "application/json",
+						url: '@Url.Action("Process", "Upload")',
+						data: JSON.stringify({ id: id }),
 						success: function (response) {
-							console.log('Called PROCESS OK');
+							$("#responseText").html("Upload complete, dives will be available to search shortly.");
 						}
 					});
 
-					//$("#responseText").html("Ok");
+					
 				},
 				xhr: function () {
 					// get the native XmlHttpRequest object
@@ -58,7 +62,7 @@
 					xhr.upload.onprogress = function (evt) {
 						value1 = evt.loaded / evt.total * 100;
 						console.log('progress', value1)
-						$(".progress-bar").css("width", value1 + "%").text(value1 + "%");
+						$("#fileUpload").css("width", value1 + "%").text(value1 + "%");
 					};
 					// set the onload event handler
 					xhr.upload.onload = function () { console.log('DONE!') };

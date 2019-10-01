@@ -77,7 +77,7 @@ namespace DiveLog.GUI.Helpers
 			}
 			catch (IOException ex)
 			{
-				System.Diagnostics.Debug.Fail(ex.Message, ex.GetBaseException().Message);
+				System.Diagnostics.Debug.WriteLine(ex.Message, ex.GetBaseException().Message);
 			}
 		}
 

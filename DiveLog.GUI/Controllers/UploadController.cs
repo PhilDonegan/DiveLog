@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -49,7 +50,7 @@ namespace DiveLog.GUI.Controllers
 		{
 			if (parserProgess != null)
 			{
-				_logger.LogInformation($"Dive {parserProgess.CurrentDive} processed of {parserProgess.TotalDives}");
+				_logger.LogInformation($"Server: Dive {parserProgess.CurrentDive} processed of {parserProgess.TotalDives}");
 				await _hubContext.Clients.Group(Id).SendAsync("progress", parserProgess);
 			}
 		}
@@ -82,11 +83,15 @@ namespace DiveLog.GUI.Controllers
         }
 
 		[HttpPost]
-		public async Task<IActionResult> Process(string id)
+		public async Task<IActionResult> Process([FromBody] JObject data)
 		{
+			_ = data ?? throw new ArgumentNullException(nameof(data));
+
+			var id = data["id"].ToString();
+
 			var path = _fileUploadManager.Get(id);
 			var dives = await _parser.ProcessDivesAsync(id, path);
-			var result = await _apiHelper.UploadDivesToAPI(dives);
+			//var result = await _apiHelper.UploadDivesToAPI(dives);
 
 			_fileHelper.DeleteUpload(path);
 			return RedirectToAction("Index");
