@@ -26,6 +26,9 @@ namespace DiveLog.API.Controllers
 		public async Task<int> TotalLogEntries() => await _cache.GetOrCreateAsync<int>("TotalLogs",
 				async cacheEntry =>
 				{
+					cacheEntry.SlidingExpiration = TimeSpan.FromSeconds(5);
+					cacheEntry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(30);
+
 					var rows = 0;
 					using (var dr = await _context.Database.ExecuteSqlQueryAsync(
 						@"SELECT SUM(PART.rows) AS rows

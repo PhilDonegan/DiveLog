@@ -11,6 +11,7 @@ using DiveLog.DAL;
 using DiveLog.DAL.Models;
 using DiveLog.DAL.Models.Types;
 using DiveLog.DTO;
+using Hangfire;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -83,25 +84,11 @@ namespace DiveLog.API.Controllers
 
         [HttpPost]
         [ProducesResponseType(typeof(LogEntryDTO), StatusCodes.Status201Created)]
-        public async void PostList([FromBody]List<LogEntryDTO> logEntries)
+        public void PostList([FromBody]List<LogEntryDTO> logEntries)
         {
             var entities = _mapper.Map<List<LogEntryDTO>, List<LogEntry>>(logEntries);
 
-            // If start seeing weird shit with missing entities may be better to create new DbContext for this one post with change tracking disabled.
-            _context.ChangeTracker.AutoDetectChangesEnabled = false;
-
-            foreach (var logEntry in entities)
-            {
-                var hash = HashGenerator.GenerateKey(logEntry.DataPoints);
-                if (_context.LogEntries.Any(x => x.HashCode.Equals(hash)))
-                {
-                    continue;
-                }
-                logEntry.HashCode = hash;
-                _context.LogEntries.Add(logEntry);
-            }
-
-            await _context.SaveChangesAsync();
+			BackgroundJob.Enqueue<IBackgroundJobs>(job => job.SaveLogs(entities));
         }
     }
 }

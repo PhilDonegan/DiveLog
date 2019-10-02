@@ -8,7 +8,7 @@ namespace DiveLog.API.Hangfire
 		public bool Authorize([NotNull] DashboardContext context)
 		{
 			var httpContext = context.GetHttpContext();
-			return true;
+			return httpContext.Request.Host.Host.Contains("localhost");
 		}
 	}
 }

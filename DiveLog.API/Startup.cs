@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DiveLog.API.Controllers;
 using DiveLog.API.Hangfire;
 using DiveLog.API.Helpers;
 using DiveLog.DAL;
@@ -37,7 +38,7 @@ namespace DiveLog.API
 			var hangfireDB = Configuration.GetConnectionString("HangfireDB");
 			services.AddHangfire(x => x.UseSqlServerStorage(hangfireDB));
             services.AddMemoryCache();
-
+						
             services.AddSession(options =>
             {
                 options.IdleTimeout = System.TimeSpan.FromHours(1);
@@ -54,6 +55,7 @@ namespace DiveLog.API
         private void SetupDI(IServiceCollection services)
         {
             services.AddScoped<DiveLogContext>();
+			services.AddScoped<IBackgroundJobs, BackgroundJobs>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

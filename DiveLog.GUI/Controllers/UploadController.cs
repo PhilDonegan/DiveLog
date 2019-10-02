@@ -79,7 +79,6 @@ namespace DiveLog.GUI.Controllers
 
 			// Return job id to 
 			return Json(id);
-			////return RedirectToAction("Index");
         }
 
 		[HttpPost]
@@ -91,7 +90,7 @@ namespace DiveLog.GUI.Controllers
 
 			var path = _fileUploadManager.Get(id);
 			var dives = await _parser.ProcessDivesAsync(id, path);
-			//var result = await _apiHelper.UploadDivesToAPI(dives);
+			var result = await _apiHelper.UploadDivesToAPI(dives);
 
 			_fileHelper.DeleteUpload(path);
 			return RedirectToAction("Index");
