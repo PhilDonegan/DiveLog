@@ -93,6 +93,7 @@ namespace DiveLog.GUI.Controllers
 			var result = await _apiHelper.UploadDivesToAPI(dives);
 
 			_fileHelper.DeleteUpload(path);
+			_fileUploadManager.Delete(id);
 			return RedirectToAction("Index");
 		}
 	}
