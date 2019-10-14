@@ -1,5 +1,6 @@
 ﻿using DiveLog.DAL.Models;
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("DiveLog.API.Test")]
@@ -18,11 +19,29 @@ namespace DiveLog.API.Helpers
 				throw new InvalidOperationException("At least two data points are required.");
 			}
 
+			var extendedDataPoints = CreateDataPointExtendedList(logEntry.DataPoints);
+
 			throw new NotImplementedException();
+		}
+
+		private List<DataPointExtended> CreateDataPointExtendedList(List<DataPoint> dataPoints)
+		{
+			var extendedDataPoints = new List<DataPointExtended>();
+			DataPointExtended previous = null;
+
+			foreach (var datapoint in dataPoints)
+			{
+				var extendedDataPoint = new DataPointExtended(datapoint.Time, datapoint.Depth, previous);
+				extendedDataPoints.Add(extendedDataPoint);
+				previous = extendedDataPoint;
+			}
+
+			return extendedDataPoints;
 		}
 
 		internal class DataPointExtended
 		{
+			private const decimal Variance = 0.5M;
 			private DataPointExtended _previous;
 
 			public DataPointExtended(int time, decimal depth, DataPointExtended previous)
@@ -65,17 +84,26 @@ namespace DiveLog.API.Helpers
 
 			private void CalculateDescending()
 			{
-
+				if (DoubleDiff > Variance)
+				{
+					Decending = Depth;
+				}
 			}
 
 			private void CalcualteAscending()
 			{
-
+				if (DoubleDiff < (Variance * -1))
+				{
+					Ascending = Depth;
+				}
 			}
 
 			private void CalculateHolding()
 			{
-
+				if (DoubleDiff > Variance && DoubleDiff <= (Variance * -1))
+				{
+					Holding = Depth;
+				}
 			}
 
 			internal int Time { get; private set; }
