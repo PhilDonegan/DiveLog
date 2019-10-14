@@ -55,7 +55,12 @@ namespace DiveLog.API.Helpers
 
 			private void CalculateDoubleDiff()
 			{
+				if (_previous == null)
+				{
+					return;
+				}
 
+				DoubleDiff = Diff + _previous.Diff;
 			}
 
 			private void CalculateDescending()
