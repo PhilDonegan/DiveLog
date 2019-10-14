@@ -34,5 +34,10 @@ namespace DiveLog.API.Controllers
 				_context.SaveChanges();
 			}
 		}
+
+		public void DeriveDiveLogStatisics()
+		{
+
+		}
 	}
 }
