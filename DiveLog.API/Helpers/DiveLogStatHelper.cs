@@ -41,7 +41,7 @@ namespace DiveLog.API.Helpers
 
 		internal class DataPointExtended
 		{
-			private const decimal Variance = 0.5M;
+			private const decimal DepthVariance = 0.5M;
 			private DataPointExtended _previous;
 
 			public DataPointExtended(int time, decimal depth, DataPointExtended previous)
@@ -84,7 +84,7 @@ namespace DiveLog.API.Helpers
 
 			private void CalculateDescending()
 			{
-				if (DoubleDiff > Variance)
+				if (DoubleDiff > DepthVariance)
 				{
 					Decending = Depth;
 				}
@@ -92,7 +92,7 @@ namespace DiveLog.API.Helpers
 
 			private void CalcualteAscending()
 			{
-				if (DoubleDiff < (Variance * -1))
+				if (DoubleDiff < (DepthVariance * -1))
 				{
 					Ascending = Depth;
 				}
@@ -100,7 +100,7 @@ namespace DiveLog.API.Helpers
 
 			private void CalculateHolding()
 			{
-				if (DoubleDiff > Variance && DoubleDiff <= (Variance * -1))
+				if (DoubleDiff > DepthVariance && DoubleDiff <= (DepthVariance * -1))
 				{
 					Holding = Depth;
 				}
