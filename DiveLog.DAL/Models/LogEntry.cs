@@ -19,8 +19,6 @@ namespace DiveLog.DAL.Models
 
         public DiveType DiveType { get; set; }
 
-        public short SampleRate { get; set; }
-
         public List<DataPoint> DataPoints { get; set; }
 
         public DiveOutcome Outcome { get; set; }
@@ -37,5 +35,9 @@ namespace DiveLog.DAL.Models
         public decimal FractionHe { get; set; }
 
         public string HashCode { get; set; }
+
+		public int? AverageBottomDepth { get; set; }
+
+		public int? BottomTime { get; set; }
     }
 }

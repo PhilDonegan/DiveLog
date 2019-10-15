@@ -13,7 +13,6 @@ namespace DiveLog.API.Profiles
                 .ForMember(x => x.ExternalId, m => m.MapFrom(y => y.ExternalId))
                 .ForMember(x => x.DiveDate, m => m.MapFrom(y => y.DiveDate))
                 .ForMember(x => x.DiveType, m => m.MapFrom(y => y.DiveType))
-                .ForMember(x => x.SampleRate, m => m.MapFrom(y => y.SampleRate))
                 .ForMember(x => x.DataPoints, m => m.MapFrom(y => y.DataPoints))
                 .ForMember(x => x.Outcome, m => m.MapFrom(y => y.Outcome))
                 .ForMember(x => x.MaxDepth, m => m.MapFrom(y => y.MaxDepth))

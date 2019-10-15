@@ -13,8 +13,6 @@ namespace DiveLog.DTO
 
         public DiveType DiveType { get; set; }
 
-        public short SampleRate { get; set; }
-
         public List<DataPointDTO> DataPoints { get; set; }
 
         public DiveOutcome Outcome { get; set; }

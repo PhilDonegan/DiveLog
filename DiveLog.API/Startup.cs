@@ -52,10 +52,16 @@ namespace DiveLog.API
             SetupDI(services);
         }
 
-        private void SetupDI(IServiceCollection services)
+		private void SetupHangfireJobs()
+		{
+			RecurringJob.AddOrUpdate<IBackgroundJobs>(job => job.DeriveDiveLogStatisics(), "0 */5 * ? * *");
+		}
+
+		private void SetupDI(IServiceCollection services)
         {
             services.AddScoped<DiveLogContext>();
 			services.AddScoped<IBackgroundJobs, BackgroundJobs>();
+			services.AddScoped<IDiveLogStatHelper, DiveLogStatHelper>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -90,6 +96,7 @@ namespace DiveLog.API
             app.UseMiddleware<GzipRequestMiddleware>();
             app.UseMvc();
 
-        }
+			SetupHangfireJobs();
+		}
     }
 }

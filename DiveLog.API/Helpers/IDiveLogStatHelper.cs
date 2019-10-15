@@ -7,5 +7,6 @@ namespace DiveLog.API.Helpers
 {
 	public interface IDiveLogStatHelper
 	{
+		Tuple<int, int> CalculateBottomTime(DAL.Models.LogEntry logEntry);
 	}
 }

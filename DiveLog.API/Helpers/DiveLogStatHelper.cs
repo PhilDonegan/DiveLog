@@ -1,6 +1,7 @@
 ﻿using DiveLog.DAL.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("DiveLog.API.Test")]
@@ -20,8 +21,48 @@ namespace DiveLog.API.Helpers
 			}
 
 			var extendedDataPoints = CreateDataPointExtendedList(logEntry.DataPoints);
+			var result = DeriveBottomTimeFromDataPoints(logEntry.MaxDepth, extendedDataPoints);
 
-			throw new NotImplementedException();
+			return result;
+		}
+
+		private Tuple<int, int> DeriveBottomTimeFromDataPoints(decimal maxDepth, List<DataPointExtended> extendedDataPoints)
+		{
+			var logIntervalSeconds = extendedDataPoints[1].Time - extendedDataPoints[0].Time;
+			var holdingDataPoints = new List<DataPointExtended>();
+
+			// Start from half max depth to rule out any stops in shallows at BEGINNING of dive
+			var halfMaxDepth = maxDepth / 2;
+			var holdingDepth = false;
+
+			// Loop through datapoints
+			foreach(var dataPoint in extendedDataPoints)
+			{
+				// Not concerned about any data points prior to this
+				if (dataPoint.Depth >= halfMaxDepth)
+				{
+					// We are now stationary, at the bottom (in theory)
+					if (dataPoint.Holding.HasValue)
+					{
+						holdingDepth = true;
+						holdingDataPoints.Add(dataPoint);
+						continue;
+					}
+					else if (holdingDepth)
+					{
+						break;
+					}
+				}
+
+				holdingDepth = false;
+			}
+
+			var meanDepth = Math.Round(holdingDataPoints.Select(x => x.Depth).Average());
+			var meanDepthInt = Convert.ToInt32(meanDepth);
+			var timeAtDepthSeconds = logIntervalSeconds * holdingDataPoints.Count;
+			var timeMintues = TimeSpan.FromSeconds(timeAtDepthSeconds).Minutes;
+
+			return new Tuple<int, int>(meanDepthInt, timeMintues);
 		}
 
 		private List<DataPointExtended> CreateDataPointExtendedList(List<DataPoint> dataPoints)
