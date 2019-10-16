@@ -57,6 +57,12 @@ namespace DiveLog.API.Helpers
 				holdingDepth = false;
 			}
 
+			if (!holdingDataPoints.Any())
+			{
+				// Couldn't calculate so return -1
+				return new Tuple<int, int>(-1, -1);
+			}
+
 			var meanDepth = Math.Round(holdingDataPoints.Select(x => x.Depth).Average());
 			var meanDepthInt = Convert.ToInt32(meanDepth);
 			var timeAtDepthSeconds = logIntervalSeconds * holdingDataPoints.Count;
@@ -77,7 +83,7 @@ namespace DiveLog.API.Helpers
 				previous = extendedDataPoint;
 			}
 
-			return extendedDataPoints;
+			return extendedDataPoints.OrderBy(x => x.Time).ToList(); ;
 		}
 
 		internal class DataPointExtended
@@ -141,7 +147,7 @@ namespace DiveLog.API.Helpers
 
 			private void CalculateHolding()
 			{
-				if (DoubleDiff > DepthVariance && DoubleDiff <= (DepthVariance * -1))
+				if (DoubleDiff >= (DepthVariance * -1) && DoubleDiff <= DepthVariance)
 				{
 					Holding = Depth;
 				}

@@ -43,7 +43,6 @@ namespace DiveLog.API.Controllers
 		public void DeriveDiveLogStatisics()
 		{
 			var matchingLogs = _context.LogEntries.Include(x => x.DataPoints).Where(x => !x.BottomTime.HasValue).ToList();
-			matchingLogs.ForEach(x => _context.Entry(x).Collection(y => y.DataPoints).Query().OrderBy(z => z.Time).Load());
 			if (matchingLogs.Any())
 			{
 				foreach (var log in matchingLogs)

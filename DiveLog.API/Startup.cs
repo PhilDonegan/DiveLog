@@ -1,10 +1,11 @@
 ﻿using AutoMapper;
 using DiveLog.API.Controllers;
-using DiveLog.API.Hangfire;
+using DiveLog.API.HangfireExtensions;
 using DiveLog.API.Helpers;
 using DiveLog.DAL;
 using Hangfire;
 using Hangfire.Dashboard;
+using Hangfire.Storage;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +18,7 @@ using System.Collections.Generic;
 
 namespace DiveLog.API
 {
-    public class Startup
+	public class Startup
     {
         public Startup(IConfiguration configuration)
         {
@@ -54,7 +55,10 @@ namespace DiveLog.API
 
 		private void SetupHangfireJobs()
 		{
-			RecurringJob.AddOrUpdate<IBackgroundJobs>(job => job.DeriveDiveLogStatisics(), "0 */5 * ? * *");
+			var recurringJobs = Hangfire.JobStorage.Current.GetConnection().GetRecurringJobs();
+			recurringJobs.ForEach(x => RecurringJob.RemoveIfExists(x.Id));
+
+			RecurringJob.AddOrUpdate<IBackgroundJobs>(x => x.DeriveDiveLogStatisics(), "0 */5 * ? * *");
 		}
 
 		private void SetupDI(IServiceCollection services)
