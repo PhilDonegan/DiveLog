@@ -88,7 +88,7 @@ namespace DiveLog.API.Helpers
 
 		internal class DataPointExtended
 		{
-			private const decimal DepthVariance = 0.5M;
+			private const decimal DepthVariance = 1;
 			private DataPointExtended _previous;
 
 			public DataPointExtended(int time, decimal depth, DataPointExtended previous)
