@@ -68,6 +68,28 @@ namespace DiveLog.API.Controllers
             return dtos;
         }
 
+		[Route("[action]")]
+		[HttpGet]
+		public async Task<ActionResult<List<LogEntryDTO>>> CompareDives(int depth, int bottomTime, DTO.Types.DiveType diveType)
+		{
+			var clause = _context.LogEntries.Include(x => x.DataPoints).AsQueryable();
+			clause = clause.Where(x => x.BottomTime.HasValue && x.BottomTime.Value == bottomTime);
+			clause = clause.Where(x => x.AverageBottomDepth.HasValue && x.AverageBottomDepth.Value == depth);
+			clause = clause.Where(x => (int)x.DiveType == (int)diveType);
+
+			var results = await clause.ToListAsync();
+			if (results == null)
+			{
+				return NotFound();
+			}
+
+			results.ForEach(x => _context.Entry(x).Collection(y => y.DataPoints).Query().OrderBy(z => z.Time).Load());
+
+			var dtos = _mapper.Map<List<LogEntry>, List<LogEntryDTO>>(results);
+			return dtos;
+		}
+
+
         [HttpGet("{id}")]
         public async Task<ActionResult<LogEntryDTO>> Get(long id)
         {

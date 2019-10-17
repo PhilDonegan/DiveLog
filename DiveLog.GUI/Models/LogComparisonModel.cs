@@ -4,7 +4,7 @@ namespace DiveLog.GUI.Models
 {
 	public class LogComparisonModel
 	{
-		public DiveType? DiveType { get; set; }
+		public DiveType DiveType { get; set; }
 
 		public int Depth { get; set; }
 

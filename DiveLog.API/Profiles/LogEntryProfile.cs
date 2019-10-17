@@ -19,6 +19,8 @@ namespace DiveLog.API.Profiles
                 .ForMember(x => x.DiveLength, m => m.MapFrom(y => y.DiveLength))
                 .ForMember(x => x.FractionO2, m => m.MapFrom(y => y.FractionO2))
                 .ForMember(x => x.FractionHe, m => m.MapFrom(y => y.FractionHe))
+				.ForMember(x => x.AverageBottomDepth, m => m.MapFrom(y => y.AverageBottomDepth))
+				.ForMember(x => x.BottomTime, m => m.MapFrom(y => y.BottomTime))
                 .ForMember(x => x.HashCode, m => m.Ignore());
         }
     }

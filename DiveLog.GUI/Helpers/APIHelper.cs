@@ -100,6 +100,29 @@ namespace DiveLog.GUI.Helpers
             }
         }
 
+		public async Task<List<LogEntryDTO>> CompareDives(int depth, int bottomTime, DiveType diveType)
+		{
+			var queryParams = new Dictionary<string, string>();
+
+			queryParams.Add("depth", depth.ToString());
+			queryParams.Add("bottomTime", bottomTime.ToString());
+			queryParams.Add("diveType", diveType.ToString("D"));
+
+			var url = QueryHelpers.AddQueryString("api/LogEntries/CompareDives", queryParams);
+
+			try
+			{
+				var response = await _client.GetStringAsync(url);
+				var dives = JsonConvert.DeserializeObject<List<LogEntryDTO>>(response);
+				return dives;
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, ex.Message);
+				throw ex;
+			}			
+		}
+
         public void Dispose()
         {
             _client.Dispose();

@@ -24,5 +24,9 @@ namespace DiveLog.DTO
         public decimal FractionO2 { get; set; }
 
         public decimal FractionHe { get; set; }
-    }
+
+		public int? AverageBottomDepth { get; set; }
+
+		public int? BottomTime { get; set; }
+	}
 }
