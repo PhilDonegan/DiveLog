@@ -26,6 +26,11 @@ namespace DiveLog.API.Helpers
 			return result;
 		}
 
+		private Tuple<int, int> DeriveBottomTimeFromDataPointsv2(List<DataPointExtended> extendedDataPoints)
+		{
+			return null;
+		}
+
 		private Tuple<int, int> DeriveBottomTimeFromDataPoints(decimal maxDepth, List<DataPointExtended> extendedDataPoints)
 		{
 			var logIntervalSeconds = extendedDataPoints[1].Time - extendedDataPoints[0].Time;
@@ -133,7 +138,7 @@ namespace DiveLog.API.Helpers
 			{
 				if (DoubleDiff > DepthVariance)
 				{
-					Decending = Depth;
+					Descending = Depth;
 				}
 			}
 
@@ -161,7 +166,7 @@ namespace DiveLog.API.Helpers
 
 			internal decimal? DoubleDiff { get; private set; }
 
-			internal decimal? Decending { get; private set; }
+			internal decimal? Descending { get; private set; }
 
 			internal decimal? Ascending { get; private set; }
 
