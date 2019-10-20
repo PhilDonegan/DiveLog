@@ -32,7 +32,20 @@ namespace DiveLog.GUI.Controllers
 				return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
 			}
 
-			return View(dives);
+			var resultsModel = new LogComparisonResultsModel();
+			foreach(var dive in dives)
+			{
+				var diveProfile = new DiveProfile();
+				foreach(var dp in dive.DataPoints.OrderBy(x => x.Time))
+				{
+					var datapoint = new DataPoint(dp.Time, Convert.ToDouble(dp.Depth));
+					diveProfile.Datapoints.Add(datapoint);
+				}
+
+				resultsModel.DiveProfiles.Add(diveProfile);
+			}
+
+			return View(resultsModel);
 		}
 	}
 }
