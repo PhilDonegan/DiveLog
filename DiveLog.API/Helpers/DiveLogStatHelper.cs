@@ -20,15 +20,104 @@ namespace DiveLog.API.Helpers
 				throw new InvalidOperationException("At least two data points are required.");
 			}
 
-			var extendedDataPoints = CreateDataPointExtendedList(logEntry.DataPoints);
-			var result = DeriveBottomTimeFromDataPoints(logEntry.MaxDepth, extendedDataPoints);
+			var extendedDataPoints = CreateDataPointExtendedList(logEntry.DataPoints.OrderBy(x => x.Time).ToList());
+			//var result = DeriveBottomTimeFromDataPoints(logEntry.MaxDepth, extendedDataPoints);
+			//var result = DeriveBottomTimeFromDataPointsv2(extendedDataPoints);
+			var result = DeriveBottomTimeFromDataPointsv3(logEntry.MaxDepth, extendedDataPoints);
 
 			return result;
 		}
 
+		private Tuple<int, int> DeriveBottomTimeFromDataPointsv3(decimal maxDepth, List<DataPointExtended> extendedDataPoints)
+		{
+			var logIntervalSeconds = extendedDataPoints[1].Time - extendedDataPoints[0].Time;
+			var holdingDataPoints = new List<DataPointExtended>();
+
+			// Start from half max depth to rule out any stops in shallows at BEGINNING of dive
+			var halfMaxDepth = maxDepth / 2;
+			var holdingDepth = false;
+
+			var ascendingTime = 0;
+
+			// Loop through datapoints
+			foreach (var dataPoint in extendedDataPoints)
+			{
+				// Not concerned about any data points prior to this
+				if (dataPoint.Depth >= halfMaxDepth)
+				{
+					// We are now stationary, at the bottom (in theory)
+					if (dataPoint.Holding.HasValue)
+					{
+						holdingDepth = true;
+						ascendingTime = 0;
+						holdingDataPoints.Add(dataPoint);
+						continue;
+					}
+					else if (holdingDepth)
+					{
+						ascendingTime += logIntervalSeconds;
+						if (TimeSpan.FromSeconds(ascendingTime).Minutes >= 1)
+						{
+							break;
+						}
+
+						continue;
+					}
+				}
+
+				holdingDepth = false;
+			}
+
+			if (!holdingDataPoints.Any())
+			{
+				// Couldn't calculate so return -1
+				return new Tuple<int, int>(-1, -1);
+			}
+
+			var meanDepth = Math.Round(holdingDataPoints.Select(x => x.Depth).Average());
+			var meanDepthInt = Convert.ToInt32(meanDepth);
+			var timeAtDepthSeconds = logIntervalSeconds * holdingDataPoints.Count;
+			var timeMintues = TimeSpan.FromSeconds(timeAtDepthSeconds).Minutes;
+
+			return new Tuple<int, int>(meanDepthInt, timeMintues);
+		}
+
 		private Tuple<int, int> DeriveBottomTimeFromDataPointsv2(List<DataPointExtended> extendedDataPoints)
 		{
-			return null;
+			var logIntervalSeconds = extendedDataPoints[1].Time - extendedDataPoints[0].Time;
+			var holdingDataPoints = new List<DataPointExtended>();
+			var holdingDepth = false;
+
+			var orderedDataPoints = extendedDataPoints.OrderByDescending(x => x.Depth).ToList();
+
+			foreach(var dataPoint in orderedDataPoints)
+			{
+				if (dataPoint.Holding.HasValue)
+				{
+					holdingDepth = true;
+					holdingDataPoints.Add(dataPoint);
+					continue;
+				}
+				else if(holdingDepth)
+				{
+					break;
+				}
+
+				holdingDepth = false;
+			}
+
+			if (!holdingDataPoints.Any())
+			{
+				// Couldn't calculate so return -1
+				return new Tuple<int, int>(-1, -1);
+			}
+
+			var meanDepth = Math.Round(holdingDataPoints.Select(x => x.Depth).Average());
+			var meanDepthInt = Convert.ToInt32(meanDepth);
+			var timeAtDepthSeconds = logIntervalSeconds * holdingDataPoints.Count;
+			var timeMintues = TimeSpan.FromSeconds(timeAtDepthSeconds).Minutes;
+
+			return new Tuple<int, int>(meanDepthInt, timeMintues);
 		}
 
 		private Tuple<int, int> DeriveBottomTimeFromDataPoints(decimal maxDepth, List<DataPointExtended> extendedDataPoints)
