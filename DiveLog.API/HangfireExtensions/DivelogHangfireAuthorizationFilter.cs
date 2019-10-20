@@ -1,7 +1,7 @@
 ﻿using Hangfire.Annotations;
 using Hangfire.Dashboard;
 
-namespace DiveLog.API.Hangfire
+namespace DiveLog.API.HangfireExtensions
 {
 	public class DivelogHangfireAuthorizationFilter : IDashboardAuthorizationFilter
 	{

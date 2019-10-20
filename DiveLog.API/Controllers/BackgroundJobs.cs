@@ -1,6 +1,7 @@
 ﻿using DiveLog.API.Helpers;
 using DiveLog.DAL;
 using DiveLog.DAL.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -12,10 +13,14 @@ namespace DiveLog.API.Controllers
 	public class BackgroundJobs : IBackgroundJobs
 	{
 		private readonly DiveLogContext _context;
+		private readonly IDiveLogStatHelper _diveLogStatHelper;
 
-		public BackgroundJobs(DiveLogContext context)
+		public BackgroundJobs(
+			DiveLogContext context,
+			IDiveLogStatHelper diveLogStatHelper)
 		{
 			_context = context ?? throw new ArgumentNullException(nameof(context));
+			_diveLogStatHelper = diveLogStatHelper ?? throw new ArgumentNullException(nameof(diveLogStatHelper));
 		}
 
 		public void SaveLogs(List<LogEntry> logEntries)
@@ -32,6 +37,28 @@ namespace DiveLog.API.Controllers
 				logEntry.HashCode = hash;
 				_context.LogEntries.Add(logEntry);
 				_context.SaveChanges();
+			}
+		}
+
+		public void DeriveDiveLogStatisics()
+		{
+			var matchingLogs = _context.LogEntries.Include(x => x.DataPoints).Where(x => !x.BottomTime.HasValue).ToList();
+			if (matchingLogs.Any())
+			{
+				foreach (var log in matchingLogs)
+				{
+					try
+					{
+						var result = _diveLogStatHelper.CalculateBottomTime(log);
+						log.AverageBottomDepth = result.Item1;
+						log.BottomTime = result.Item2;
+						_context.SaveChanges();
+					}
+					catch (Exception ex)
+					{
+						System.Diagnostics.Debug.WriteLine(ex.Message, ex.GetBaseException().Message);
+					}
+				}
 			}
 		}
 	}

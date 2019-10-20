@@ -14,11 +14,13 @@ GUI to review dive profiles.
 ## Phase 4 (Done)
 More data, more parsing, more everything.
 
-## Phase 5 
-OSTC parser
+## Phase 5 (Done)
+Dive planner based on statistical comparison
 
 ## Phase 6
-Dive planner based on statistical comparison
+OSTC parser
+
+
 
 GUI currently deployed to here: https://www.decostats.com/
 API currently deployed to here: https://api.decostats.com/ swagger doc at https://api.decostats.com/swagger/index.html

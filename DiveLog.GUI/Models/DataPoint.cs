@@ -24,6 +24,7 @@ namespace DiveLog.GUI.Models
 
         public double AveragePPO2 { get; private set; }
 
+		[DataMember(Name ="timemin")]
         public double TimeMin => X / 60;
     }
 }

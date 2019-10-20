@@ -18,7 +18,7 @@ namespace DiveLog.API.Test
             };
 
             var hash = HashGenerator.GenerateKey(datapoints);
-            Assert.AreEqual("A354FACF69D9FC64CCA3FEC4DBF4ED93", hash);
+            Assert.AreEqual("82083878B4872E31C590853072F19F61", hash);
         }
 
         [TestMethod]
@@ -31,7 +31,7 @@ namespace DiveLog.API.Test
             };
 
             var hash = HashGenerator.GenerateKey(datapoints);
-            Assert.AreNotEqual("A354FACF69D9FC64CCA3FEC4DBF4ED93", hash);
+            Assert.AreNotEqual("82083878B4872E31C590853072F19F61", hash);
         }
     }
 }
