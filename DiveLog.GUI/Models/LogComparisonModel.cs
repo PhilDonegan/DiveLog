@@ -1,4 +1,6 @@
 ﻿using DiveLog.DTO.Types;
+using System;
+using System.Collections.Generic;
 
 namespace DiveLog.GUI.Models
 {
@@ -9,5 +11,7 @@ namespace DiveLog.GUI.Models
 		public int Depth { get; set; }
 
 		public int Time { get; set; }
+
+		public List<Tuple<int, int, int>> AvailableComparisons { get; set; }
 	}
 }

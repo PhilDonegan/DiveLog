@@ -3,22 +3,44 @@
 	ViewData["Title"] = "Dive Log Comparison";
 }
 <div class="container">
-	<h3>Comparison Parameters:</h3>
-	<form asp-action="LogComparisonResults">
-		<div class="form-group">
-			<label asp-for="DiveType" class="control-label">Dive Type:</label>
-			<select asp-for="DiveType" asp-items="Html.GetEnumSelectList<DiveLog.DTO.Types.DiveType>()">
-			</select>
-		</div>
-		<div class="form-group">
-			<label asp-for="Depth">Depth (m):</label>
-			<input type="number" asp-for="Depth"/>
-		</div>
-		<div class="form-group">
-			<label asp-for="Time">Time (min):</label>
-			<input type="number" asp-for="Time"/>
-		</div>
+	<div class="row">
+		<div class="col-lg-10">
+			<h3>Comparison Parameters:</h3>
+			<form asp-action="LogComparisonResults">
+				<div class="form-group">
+					<label asp-for="DiveType" class="control-label">Dive Type:</label>
+					<select asp-for="DiveType" asp-items="Html.GetEnumSelectList<DiveLog.DTO.Types.DiveType>()">
+					</select>
+				</div>
+				<div class="form-group">
+					<label asp-for="Depth">Depth (m):</label>
+					<input type="number" asp-for="Depth" />
+				</div>
+				<div class="form-group">
+					<label asp-for="Time">Time (min):</label>
+					<input type="number" asp-for="Time" />
+				</div>
 
-		<input type="submit" value="Compare" class="btn btn-primary" />
-	</form>
+				<input type="submit" value="Compare" class="btn btn-primary" />
+			</form>
+		</div>
+		<div class="col-lg-2">
+			<h5>Available Comparisons</h5>
+			<table class="table table-condensed">
+				<thead>
+					<tr>
+						<th>m</th>
+						<th>min</th>
+						<th>Total</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var row in Model.AvailableComparisons)
+					{
+						@Html.Raw($"<tr><td>{row.Item1}</td><td>{row.Item2}</td><td>{row.Item3}</td></tr>");
+					}
+				</tbody>
+			</table>
+		</div>
+	</div>
 </div>

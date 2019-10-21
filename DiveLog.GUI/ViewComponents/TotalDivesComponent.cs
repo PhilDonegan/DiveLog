@@ -34,7 +34,7 @@ namespace DiveLog.GUI.ViewComponents
 		{
 			try
 			{
-				return await _client.GetStringAsync("api/Stats");
+				return await _client.GetStringAsync("api/Stats/TotalLogEntries");
 			}
 			catch (Exception ex)
 			{

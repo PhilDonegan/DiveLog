@@ -18,9 +18,13 @@ namespace DiveLog.GUI.Controllers
 			_apiHelper = apiHelper ?? throw new ArgumentNullException(nameof(apiHelper));
 		}
 
-        public IActionResult LogComparison()
+        public async Task<IActionResult> LogComparison()
         {
-            return View();
+			var availableComparisons = await _apiHelper.GetAvailableComparisons();
+			var model = new LogComparisonModel();
+			model.AvailableComparisons = availableComparisons;
+
+            return View(model);
         }
 
 		public async Task<IActionResult> LogComparisonResults(LogComparisonModel model)

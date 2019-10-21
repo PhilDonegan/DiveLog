@@ -3,6 +3,7 @@ using DiveLog.DAL;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace DiveLog.API.Controllers
@@ -23,6 +24,7 @@ namespace DiveLog.API.Controllers
 		}
 
 		[HttpGet]
+		[Route("[action]")]
 		public async Task<int> TotalLogEntries() => await _cache.GetOrCreateAsync<int>("TotalLogs",
 				async cacheEntry =>
 				{
@@ -46,6 +48,32 @@ namespace DiveLog.API.Controllers
 						}
 
 						return rows;
+					}
+				});
+
+		[HttpGet]
+		[Route("[action]")]
+		public async Task<List<Tuple<int, int, int>>> GetAvailableComparisons() => await _cache.GetOrCreateAsync("AvailableComparisons",
+				async cacheEntry =>
+				{
+					cacheEntry.SlidingExpiration = TimeSpan.FromSeconds(5);
+					cacheEntry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(30);
+
+					List<Tuple<int, int, int>> results = new List<Tuple<int, int, int>>();
+					using (var dr = await _context.Database.ExecuteSqlQueryAsync(
+						@"SELECT l.AverageBottomDepth, l.BottomTime, COUNT(*) AS Total
+						FROM LogEntries l
+						WHERE l.AverageBottomDepth NOT IN (-1, 0) AND l.BottomTime NOT IN (-1, 0)
+						GROUP BY l.AverageBottomDepth, l.BottomTime
+						ORDER BY l.AverageBottomDepth ASC"))
+					{
+						var reader = dr.DbDataReader;
+						while (reader.Read())
+						{
+							results.Add(new Tuple<int, int, int>(Convert.ToInt32(reader[0]), Convert.ToInt32(reader[1]), Convert.ToInt32(reader[2])));
+						}
+
+						return results;
 					}
 				});
 	}

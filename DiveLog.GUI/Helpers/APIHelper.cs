@@ -71,6 +71,21 @@ namespace DiveLog.GUI.Helpers
             }
         }
 
+		public async Task<List<Tuple<int, int, int>>> GetAvailableComparisons()
+		{
+			try
+			{
+				var response = await _client.GetStringAsync("api/Stats/GetAvailableComparisons");
+				var result = JsonConvert.DeserializeObject<List<Tuple<int, int, int>>>(response);
+				return result;
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, ex.Message);
+				throw ex;
+			}
+		}
+
         public async Task<List<LogEntryDTO>> SearchDives(DiveType? diveType, decimal targetDepth, short targetDepthRange, double TargetDiveLength, double TargetDiveLengthRange)
         {
             var queryParams = new Dictionary<string, string>();
