@@ -4,7 +4,6 @@
     {
         OC = 0,
         CCR,
-        SCR,
         Unknown
     }
 }

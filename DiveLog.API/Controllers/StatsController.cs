@@ -1,5 +1,6 @@
 ﻿using DiveLog.API.Helpers;
 using DiveLog.DAL;
+using DiveLog.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using System;
@@ -53,13 +54,13 @@ namespace DiveLog.API.Controllers
 
 		[HttpGet]
 		[Route("[action]")]
-		public async Task<List<Tuple<int, int, int>>> GetAvailableComparisons() => await _cache.GetOrCreateAsync("AvailableComparisons",
+		public async Task<List<ComparisonMetricDTO>> GetAvailableComparisons() => await _cache.GetOrCreateAsync("AvailableComparisons",
 				async cacheEntry =>
 				{
 					cacheEntry.SlidingExpiration = TimeSpan.FromSeconds(5);
 					cacheEntry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(30);
 
-					List<Tuple<int, int, int>> results = new List<Tuple<int, int, int>>();
+					List<ComparisonMetricDTO> results = new List<ComparisonMetricDTO>();
 					using (var dr = await _context.Database.ExecuteSqlQueryAsync(
 						@"SELECT l.AverageBottomDepth, l.BottomTime, COUNT(*) AS Total
 						FROM LogEntries l
@@ -70,11 +71,31 @@ namespace DiveLog.API.Controllers
 						var reader = dr.DbDataReader;
 						while (reader.Read())
 						{
-							results.Add(new Tuple<int, int, int>(Convert.ToInt32(reader[0]), Convert.ToInt32(reader[1]), Convert.ToInt32(reader[2])));
+							results.Add(new ComparisonMetricDTO(Convert.ToInt32(reader[0]), Convert.ToInt32(reader[1]), Convert.ToInt32(reader[2])));
 						}
 
 						return results;
 					}
 				});
+
+#if DEBUG
+		[HttpGet]
+		[Route("[action]")]
+		public async Task<string> GetDatabaseName()
+		{
+			var result = "Unknown";
+			using (var dr = await _context.Database.ExecuteSqlQueryAsync(
+				@"SELECT DB_NAME()"))
+			{
+				var reader = dr.DbDataReader;
+				while (reader.Read())
+				{
+					result = reader[0].ToString();
+				}
+			}
+
+			return result;
+		}
+#endif
 	}
 }

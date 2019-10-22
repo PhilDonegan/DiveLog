@@ -58,29 +58,6 @@ namespace DiveLog.GUI.Controllers
             return View(resultsModel);
         }
 
-        public async Task<IActionResult> GetDives()
-        {
-            var dives = await _apiHelper.GetAllDives();
-
-            if (!ModelState.IsValid)
-            {
-                return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-            }
-
-            // Shearwater dive #10
-            var dive = dives[8];
-            var datapoints = new List<DataPoint>();
-            foreach (var dp in dive.DataPoints)
-            {
-                var datapoint = new DataPoint(dp.Time / 10, Convert.ToDouble(dp.Depth));
-                datapoints.Add(datapoint);
-            }
-
-            ViewData["Datapoints"] = JsonConvert.SerializeObject(datapoints.OrderBy(x => x.X));
-
-            return RedirectToAction("LogSearcher");
-        }
-
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

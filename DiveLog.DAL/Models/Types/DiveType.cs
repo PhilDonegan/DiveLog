@@ -8,7 +8,6 @@ namespace DiveLog.DAL.Models.Types
     {
         OC = 0,
         CCR,
-        SCR,
         Unknown            
     }
 }

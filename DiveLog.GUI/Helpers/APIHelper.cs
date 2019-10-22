@@ -35,8 +35,6 @@ namespace DiveLog.GUI.Helpers
 
         public async Task<bool> UploadDivesToAPI(List<LogEntryDTO> dives)
         {
-            // TODO: Remove this an upload all the dives.
-            //var test = dives.Take(10).ToList();
             var json = JsonConvert.SerializeObject(dives);
             var stringContent = new StringContent(json, Encoding.UTF8, "application/json");
             var compressedContent = new CompressedContent(stringContent, "gzip");
@@ -71,12 +69,12 @@ namespace DiveLog.GUI.Helpers
             }
         }
 
-		public async Task<List<Tuple<int, int, int>>> GetAvailableComparisons()
+		public async Task<List<ComparisonMetricDTO>> GetAvailableComparisons()
 		{
 			try
 			{
 				var response = await _client.GetStringAsync("api/Stats/GetAvailableComparisons");
-				var result = JsonConvert.DeserializeObject<List<Tuple<int, int, int>>>(response);
+				var result = JsonConvert.DeserializeObject<List<ComparisonMetricDTO>>(response);
 				return result;
 			}
 			catch (Exception ex)

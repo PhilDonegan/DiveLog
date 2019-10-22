@@ -37,7 +37,7 @@
 				<tbody>
 					@foreach (var row in Model.AvailableComparisons)
 					{
-						@Html.Raw($"<tr><td>{row.Item1}</td><td>{row.Item2}</td><td>{row.Item3}</td></tr>");
+						@Html.Raw($"<tr><td>{row.Depth}</td><td>{row.Time}</td><td>{row.Total}</td></tr>");
 					}
 				</tbody>
 			</table>

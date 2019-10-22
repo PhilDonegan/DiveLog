@@ -1,4 +1,5 @@
-﻿using DiveLog.DTO.Types;
+﻿using DiveLog.DTO;
+using DiveLog.DTO.Types;
 using System;
 using System.Collections.Generic;
 
@@ -12,6 +13,6 @@ namespace DiveLog.GUI.Models
 
 		public int Time { get; set; }
 
-		public List<Tuple<int, int, int>> AvailableComparisons { get; set; }
+		public List<ComparisonMetricDTO> AvailableComparisons { get; set; }
 	}
 }
