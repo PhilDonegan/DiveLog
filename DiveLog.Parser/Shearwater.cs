@@ -76,7 +76,6 @@ namespace DiveLog.Parsers
                             dive.DiveDate = DateTime.Parse(date.ToString());
                             dive.MaxDepth = Convert.ToDecimal(reader["maxDepth"]);
                             dive.DiveLength = TimeSpan.FromMinutes(Convert.ToInt32(reader["maxTime"]));
-                            dive.DiveType = DTO.Types.DiveType.CCR;
                             dive.Outcome = DTO.Types.DiveOutcome.Unknown;
 
                             dive.DataPoints = new List<DataPointDTO>();
@@ -85,7 +84,7 @@ namespace DiveLog.Parsers
                     }
                 }
 
-                string sqllog = "SELECT id, diveLogId, currentTime, currentDepth, fractionO2, fractionHe, waterTemp, averagePPO2, CNSPercent FROM dive_log_records WHERE diveLogId =";
+                string sqllog = "SELECT id, diveLogId, currentTime, currentDepth, fractionO2, fractionHe, waterTemp, averagePPO2, CNSPercent, currentCircuitSetting FROM dive_log_records WHERE diveLogId =";
                 foreach(var dive in dives)
                 {
                     using (var command = new SQLiteCommand(sqllog + dive.ExternalId, sqliteConnection))
@@ -94,12 +93,6 @@ namespace DiveLog.Parsers
                         {
                             while (reader.Read())
                             {
-                                if (dive.FractionHe == 0 && dive.FractionO2 == 0)
-                                {
-                                    dive.FractionO2 = Convert.ToDecimal(reader["fractionO2"]);
-                                    dive.FractionHe = Convert.ToDecimal(reader["fractionHe"]);
-                                }
-
                                 var dataPoint = new DataPointDTO();
                                 dataPoint.AveragePPO2 = Convert.ToDecimal(reader["averagePPO2"]);
                                 dataPoint.Depth = Convert.ToDecimal(reader["currentDepth"]);
@@ -107,7 +100,27 @@ namespace DiveLog.Parsers
                                 dataPoint.WaterTemp = Convert.ToInt16(reader["waterTemp"]);
                                 dataPoint.CNS = Convert.ToInt16(reader["CNSPercent"]);
 
-                                dive.DataPoints.Add(dataPoint);
+								if (dataPoint.Time == 0)
+								{
+									dive.FractionO2 = Convert.ToDecimal(reader["fractionO2"]);
+									dive.FractionHe = Convert.ToDecimal(reader["fractionHe"]);
+									var startCircuitSetting = Convert.ToInt16(reader["currentCircuitSetting"]);
+									switch (startCircuitSetting)
+									{
+										case 0:
+											dive.DiveType = DTO.Types.DiveType.CCR;
+											break;
+										case 1:
+											dive.DiveType = DTO.Types.DiveType.OC;
+											break;
+										default:
+											dive.DiveType = DTO.Types.DiveType.Unknown;
+											break;
+									}
+
+								}
+
+								dive.DataPoints.Add(dataPoint);
 							}
                         }
                     }
