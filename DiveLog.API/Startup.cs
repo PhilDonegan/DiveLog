@@ -51,7 +51,15 @@ namespace DiveLog.API
             });
 
             SetupDI(services);
-        }
+
+			var serviceProvider = services.BuildServiceProvider();
+			RunDBMigrations(serviceProvider.GetService<DiveLogContext>());
+		}
+
+		private void RunDBMigrations(DiveLogContext diveLogContext)
+		{
+			diveLogContext.Database.Migrate();
+		}
 
 		private void SetupHangfireJobs()
 		{
