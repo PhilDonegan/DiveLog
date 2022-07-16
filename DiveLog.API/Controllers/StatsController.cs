@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DiveLog.API.Controllers
@@ -74,7 +75,7 @@ namespace DiveLog.API.Controllers
 							results.Add(new ComparisonMetricDTO(Convert.ToInt32(reader[0]), Convert.ToInt32(reader[1]), Convert.ToInt32(reader[2])));
 						}
 
-						return results;
+						return results.Where(x => x.Total > 1 && x.Time >= 5).ToList();
 					}
 				});
 
